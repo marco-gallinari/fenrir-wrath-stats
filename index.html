@@ -31,6 +31,32 @@
             flex-direction: column;
         }
 
+        .loader {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            z-index: 1;
+            width: 150px;
+            height: 150px;
+            margin: -75px 0 0 -75px;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+            z-index: 1000;
+        }
+
+        @-webkit-keyframes spin {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         #row1 {
             flex: 1;
             display: flex;
@@ -89,6 +115,10 @@
         .tab button.active {
             background-color: #ccc;
         }
+
+        .hidden {
+            visibility: hidden;
+        }
       
     </style>
   </head>
@@ -99,6 +129,8 @@
         <button class="tablinks" onclick="openWar(event, 1879)">War 3/10/2020</button>
     </div>
 
+    <div class="loader hidden"></div>
+    
     <div id="row1">
         <div id="pie"></div>  
         <div id="bars"></div>   
@@ -112,11 +144,14 @@
         function disposeCharts() {
             if (chart) chart.dispose();
             if (bchart) bchart.dispose();
+            $("#table").empty();
         }
 
         function openWar(event, source) {    
-            anychart.theme(anychart.themes.sea);   
             disposeCharts(); 
+            anychart.theme(anychart.themes.sea);
+
+            $(".loader").removeClass("hidden");
 
             $(".tablinks").removeClass("active");
             $(event.currentTarget).addClass("active");
@@ -127,6 +162,8 @@
                     return response.json();
             })
             .then((myJson) => {
+                
+                $(".loader").addClass("hidden");
             // create data variable for the chart
                 var data = [];
                 var totMana = 0.0;
