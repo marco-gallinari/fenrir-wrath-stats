@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Fenrir Wrath</title>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,600,400" rel="stylesheet" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+
+    <link href="https://cdn.anychart.com/releases/v8/css/anychart-ui.min.css" type="text/css" rel="stylesheet">
+    <link href="https://cdn.anychart.com/releases/v8/fonts/css/anychart-font.min.css" type="text/css" rel="stylesheet">
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-ui.min.js"></script>
+    <script src="https://cdn.anychart.com/themes/2.0.0/sea.min.js"></script>
+
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
+     
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
+    
+    <style type="text/css">
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            color: #262626;
+            font-family: "Helvetica Neue Light","Open Sans",Helvetica;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #row1 {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            min-height: 800px;
+        }
+
+        #row2 {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            min-height: 600px;
+        }
+
+        #pie {
+            flex: 1;
+            width:400px;
+            margin: 0;
+            padding: 0;
+        }
+
+        #bars {
+            flex: 1;
+        }
+
+        #table {
+            width: 100%;
+            min-height: 600px;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Style the tab */
+        .tab {
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+
+        /* Style the buttons that are used to open the tab content */
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+        }
+
+        /* Change background color of buttons on hover */
+        .tab button:hover {
+            background-color: #ddd;
+        }
+
+        /* Create an active/current tablink class */
+        .tab button.active {
+            background-color: #ccc;
+        }
+      
+    </style>
+  </head>
+  <body>
+
+    <div class="tab">
+        <button class="tablinks" onclick="openWar(event, 1893)">War 21/9/2020</button>
+        <button class="tablinks" onclick="openWar(event, 1879)">War 3/10/2020</button>
+    </div>
+
+    <div id="row1">
+        <div id="pie"></div>  
+        <div id="bars"></div>   
+    </div>
+    <div id="row2">    
+        <div id="table"></div>  
+    </div>
+                                    
+    <script>
+        var chart, bchart;
+        function disposeCharts() {
+            if (chart) chart.dispose();
+            if (bchart) bchart.dispose();
+        }
+
+        function openWar(event, source) {    
+            anychart.theme(anychart.themes.sea);   
+            disposeCharts(); 
+
+            $(".tablinks").removeClass("active");
+            $(event.currentTarget).addClass("active");
+
+            // Fetch Data from the API
+            fetch(`https://api.apispreadsheets.com/data/${source}/?dataFormat=matrix`)
+                .then((response) => {
+                    return response.json();
+            })
+            .then((myJson) => {
+            // create data variable for the chart
+                var data = [];
+                var totMana = 0.0;
+                var cris = [];
+                var totCri1 = 0.0;
+                var totCri2 = 0.0;
+
+                for (var i = 1; i < 30; i++) {
+                    if (myJson.data[i][1].length > 0) {
+                        var mana = +(myJson.data[i][2].replace(/,/,'.'));
+                        var c1 = +(myJson.data[i][3].replace(/,/,'.'));
+                        var c2 = +(myJson.data[i][4].replace(/,/,'.'));
+                        totMana += mana;
+                        totCri1 += c1;
+                        totCri2 += c2;
+                        data.push({ x: myJson.data[i][1], value: mana });
+                        cris.push({ player: myJson.data[i][1], cri1: c1, cri2: c2, tc: c1 + c2 });
+                    }
+                }
+
+                data = data.sort(function(a, b) {
+                  return a.value > b.value ? -1 : (a.value < b.value ? 1 : 0) ;
+                });
+                cris = cris.sort(function(a, b) {
+                  return a.tc > b.tc ? -1 : (a.tc < b.tc ? 1 : 0) ;
+                });
+
+                chart = anychart.pie(data);
+
+                chart.palette(anychart.palettes.sea);
+                chart.innerRadius("50%");
+                chart.title("Mana collected (M)");
+                chart.labels().position("outside").fontColor("#262626");
+                chart.connectorStroke({color: "#595959", thickness: 1, dash:"2 2"});
+
+                var avg = mana = +(myJson.data[0][2].replace(/,/,'.'));
+                var label = anychart.standalones.label();
+                label.text("Total mana: " + totMana.toFixed(1) + "M<br/>Average: " + avg + "M");
+                label.width("100%");
+                label.height("100%");
+                label.hAlign("center");
+                label.vAlign("middle");
+                label.useHtml(true);
+
+                chart.center().content(label);
+
+                chart.container("pie");
+                chart.draw();
+
+                // create a chart
+                bchart = anychart.bar();
+                bchart.palette(anychart.palettes.sea);
+                bchart.title("Crystals collected (k)");
+                bchart.legend(true);
+
+                // enable the value stacking mode
+                bchart.yScale().stackMode("value");
+
+                // create bar series
+                var series1 = bchart.bar(cris.map((el) => {
+                    return [el.player, el.cri1];
+                }));
+                var series2 = bchart.bar(cris.map((el) => {
+                    return [el.player, el.cri2];
+                }));
+
+                series1.name("Crystal I (k)");
+                series2.name("Crystal II (k)");
+
+                bchart.container("bars");
+                bchart.draw();
+
+                $("#table").jsGrid({
+                    width: "100%",
+                    height: "400px",
+                    sorting: true,
+            
+                    data: $.map(
+                        myJson.data.slice(1,31).filter(
+                            (v) => {
+                                return v[1].length > 1;
+                            }),
+                        (el, ix) => {
+                            return {
+                                No : el[0],
+                                Player : el[1],
+                                ManaCollected : +(el[2].replace(/,/,'.')),
+                                CrystalI : +(el[3].replace(/,/,'.')),
+                                CrystalII : +(el[4].replace(/,/,'.')),
+                                Islands : el[5],
+                                DefeatedHeroes : el[6],
+                                AVGEnemyPower : el[7],
+                                Hardness : +(el[8].replace(/,/,'.')),
+                                PlayerPower : el[9]
+                            }
+                        }).sort(function(a, b) {
+                            return a.ManaCollected > b.ManaCollected ? -1 : (a.ManaCollected < b.ManaCollected ? 1 : 0) ;
+                        }),
+
+                    fields: [
+                        { name: "No", title: "Number", type: "number", width: 30, visible: false },
+                        { name: "Player", title: "Player", type: "text", width: 150 },
+                        { name: "ManaCollected", title: "Mana (M)", type: "number" },
+                        { name: "CrystalI", title: "Crystal I (k)", type: "number" },
+                        { name: "CrystalII", title: "Crystal II (k)", type: "number" },
+                        { name: "Islands", title: "Islands captured", type: "number" },
+                        { name: "DefeatedHeroes", title: "Defeated Heroes (k)", type: "number" },
+                        { name: "AVGEnemyPower", title: "Avg Enemy Power (k)", type: "number" },
+                        { name: "Hardness", title: "Difficulty", type: "number" },
+                        { name: "PlayerPower", title: "Player power (k)", type: "number" }
+                    ]
+                });
+            });
+        }
+      </script>
+</body>
+</html>
+
