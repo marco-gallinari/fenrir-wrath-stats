@@ -611,7 +611,7 @@
                     $(".list__ul").append(
                         $('<li>').append(
                             $('<a>').text(
-                                `${moment().week(populatedWeeks[i]).startOf('isoWeek').format('DD/MM/YYYY')} to ${moment().week(populatedWeeks[i]).endOf('isoWeek').format('DD/MM/YYYY')}`
+                                `${moment().week(populatedWeeks[i]).startOf('isoWeek').subtract(3, 'days').format('DD/MM/YYYY')} to ${moment().week(populatedWeeks[i]).endOf('isoWeek').subtract(2, 'days').format('DD/MM/YYYY')}`
                             ).attr(
                                 'href',
                                 populatedWeeks[i]
