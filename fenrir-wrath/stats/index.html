@@ -152,6 +152,48 @@
             $("#table").empty();
         }
 
+        function percentile(arr, p) {
+            if (arr.length === 0) return 0;
+            if (typeof p !== 'number') throw new TypeError('p must be a number');
+            if (p <= 0) return arr[0];
+            if (p >= 1) return arr[arr.length - 1];
+
+            arr.sort(function (a, b) { return a - b; });
+            var index = (arr.length - 1) * p
+                lower = Math.floor(index),
+                upper = lower + 1,
+                weight = index % 1;
+
+            if (upper >= arr.length) return arr[lower];
+            return arr[lower] * (1 - weight) + arr[upper] * weight;
+        }
+
+        function perc2color(perc,min,max) {
+            var base = (max - min);
+
+            if (base == 0) { perc = 100; }
+            else {
+                perc = (perc - min) / base * 100; 
+            }
+            var r, g, b = 0;
+            if (perc < 50) {
+                r = 255;
+                g = Math.round(5.1 * perc);
+            }
+            else {
+                g = 255;
+                r = Math.round(510 - 5.10 * perc);
+            }
+            var h = r * 0x10000 + g * 0x100 + b * 0x1;
+            return '#' + ('000000' + h.toString(16)).slice(-6);
+        }
+
+        function percentileTemplate(value, percentile, mins, maxs, field) {
+            return $("<div>")
+            .attr("style", `width:100%;height:100%;padding-right:5px;border-radius:3px;background-color:${perc2color(value - percentile, mins[field], maxs[field])};filter: brightness(90%) opacity(80%);`)
+            .text(value);
+        } 
+
         function openWar(event, source) {    
             disposeCharts(); 
             anychart.theme(anychart.themes.sea);
@@ -168,7 +210,6 @@
             })
             .then((myJson) => {
                 
-                $(".loader").addClass("hidden");
             // create data variable for the chart
                 var data = [];
                 var totMana = 0.0;
@@ -188,32 +229,28 @@
                         cris.push({ player: myJson.data[i][1], cri1: c1, cri2: c2, tc: c1 + c2 });
                     }
                 }
+                var avg = +(myJson.data[0][2].replace(/,/,'.'));
 
                 data = data.sort(function(a, b) {
-                  return a.value > b.value ? -1 : (a.value < b.value ? 1 : 0) ;
+                  return b.value - a.value;
                 });
                 cris = cris.sort(function(a, b) {
-                  return a.tc > b.tc ? -1 : (a.tc < b.tc ? 1 : 0) ;
+                  return b.tc - a.tc;
                 });
 
                 chart = anychart.pie(data);
 
                 chart.palette(anychart.palettes.sea);
                 chart.innerRadius("50%");
-                chart.title("Mana collected (M)");
+                chart.title("Mana collected");
+                //enables HTML tags
+                chart.title().text(
+                    "<b>Mana collected <i>(M)</i></b>" +
+                    `<br><p style="font-size:12px">Total: ${totMana.toFixed(1)}M<br>Average: ${avg.toFixed(2)}M<p></i>`
+                ).useHtml(true);
                 chart.labels().position("outside").fontColor("#262626");
                 chart.connectorStroke({color: "#595959", thickness: 1, dash:"2 2"});
 
-                var avg = mana = +(myJson.data[0][2].replace(/,/,'.'));
-                var label = anychart.standalones.label();
-                label.text("Total mana: " + totMana.toFixed(1) + "M<br/>Average: " + avg + "M");
-                label.width("100%");
-                label.height("100%");
-                label.hAlign("center");
-                label.vAlign("middle");
-                label.useHtml(true);
-
-                chart.center().content(label);
 
                 chart.container("pie");
                 chart.draw();
@@ -222,6 +259,11 @@
                 bchart = anychart.bar();
                 bchart.palette(anychart.palettes.sea);
                 bchart.title("Crystals collected (k)");
+                //enables HTML tags
+                bchart.title().text(
+                    "<b>Crystals collected <i>(k)</i></b>" +
+                    `<br><p style="font-size:12px">Type I: ${totCri1.toFixed(1)}M<br>Type II: ${totCri2.toFixed(1)}M<p></i>`
+                ).useHtml(true);
                 bchart.legend(true);
 
                 // enable the value stacking mode
@@ -241,12 +283,7 @@
                 bchart.container("bars");
                 bchart.draw();
 
-                $("#table").jsGrid({
-                    width: "100%",
-                    height: "1050px",
-                    sorting: true,
-            
-                    data: $.map(
+                var tableData = $.map(
                         myJson.data.slice(1,31).filter(
                             (v) => {
                                 return v[1].length > 1;
@@ -265,25 +302,119 @@
                                 PlayerPower : el[9]
                             }
                         }).sort(function(a, b) {
-                            return a.ManaCollected > b.ManaCollected ? -1 : (a.ManaCollected < b.ManaCollected ? 1 : 0) ;
-                        }),
+                            return b.ManaCollected - a.ManaCollected ;
+                        });
+                
+                var mana60th = percentile($.map(tableData, (el, ix) => {
+                    return el.ManaCollected
+                }), 0.6);
+                
+                var cri160th = percentile($.map(tableData, (el, ix) => {
+                    return el.CrystalI
+                }), 0.6);
+
+                var cri260th = percentile($.map(tableData, (el, ix) => {
+                    return el.CrystalII
+                }), 0.6);
+                
+                var islands60th = percentile($.map(tableData, (el, ix) => {
+                    return el.Islands
+                }), 0.6);
+                
+                var def60th = percentile($.map(tableData, (el, ix) => {
+                    return el.DefeatedHeroes
+                }), 0.6);
+                
+                var avgdef60th = percentile($.map(tableData, (el, ix) => {
+                    return el.AVGEnemyPower
+                }), 0.6);
+                
+                var hard60th = percentile($.map(tableData, (el, ix) => {
+                    return el.Hardness
+                }), 0.6);
+                
+                var pow60th = percentile($.map(tableData, (el, ix) => {
+                    return el.PlayerPower
+                }), 0.6);
+                
+                var min60ths = {
+                    mana: Math.min.apply(Math, $.map(tableData, (el, ix) => { return el.ManaCollected - mana60th })),
+                    cri1: Math.min.apply(Math, $.map(tableData, (el, ix) => { return el.CrystalI - cri160th })),
+                    cri2: Math.min.apply(Math, $.map(tableData, (el, ix) => { return el.CrystalII - cri260th })),
+                    isln: Math.min.apply(Math, $.map(tableData, (el, ix) => { return el.Islands - islands60th })),
+                    defe: Math.min.apply(Math, $.map(tableData, (el, ix) => { return el.DefeatedHeroes - def60th })),
+                    avgd: Math.min.apply(Math, $.map(tableData, (el, ix) => { return el.AVGEnemyPower - avgdef60th })),
+                    hard: Math.min.apply(Math, $.map(tableData, (el, ix) => { return el.Hardness - hard60th })),
+                    powr: Math.min.apply(Math, $.map(tableData, (el, ix) => { return el.PlayerPower - pow60th })),
+                }; 
+                
+                var max60ths = {
+                    mana: Math.max.apply(Math, $.map(tableData, (el, ix) => { return el.ManaCollected - mana60th })),
+                    cri1: Math.max.apply(Math, $.map(tableData, (el, ix) => { return el.CrystalI - cri160th })),
+                    cri2: Math.max.apply(Math, $.map(tableData, (el, ix) => { return el.CrystalII - cri260th })),
+                    isln: Math.max.apply(Math, $.map(tableData, (el, ix) => { return el.Islands - islands60th })),
+                    defe: Math.max.apply(Math, $.map(tableData, (el, ix) => { return el.DefeatedHeroes - def60th })),
+                    avgd: Math.max.apply(Math, $.map(tableData, (el, ix) => { return el.AVGEnemyPower - avgdef60th })),
+                    hard: Math.max.apply(Math, $.map(tableData, (el, ix) => { return el.Hardness - hard60th })),
+                    powr: Math.max.apply(Math, $.map(tableData, (el, ix) => { return el.PlayerPower - pow60th })),
+                }; 
+
+                $("#table").jsGrid({
+                    width: "100%",
+                    height: "1050px",
+                    sorting: true,
+            
+                    data: tableData,
 
                     fields: [
                         { name: "No", title: "Number", type: "number", width: 30, visible: false },
                         { name: "Player", title: "Player", type: "text", width: 150 },
-                        { name: "ManaCollected", title: "Mana (M)", type: "number" },
-                        { name: "CrystalI", title: "Crystal I (k)", type: "number" },
-                        { name: "CrystalII", title: "Crystal II (k)", type: "number" },
-                        { name: "Islands", title: "Islands captured", type: "number" },
-                        { name: "DefeatedHeroes", title: "Defeated Heroes (k)", type: "number" },
-                        { name: "AVGEnemyPower", title: "Avg Enemy Power (k)", type: "number" },
-                        { name: "Hardness", title: "Difficulty", type: "number" },
-                        { name: "PlayerPower", title: "Player power (k)", type: "number" }
+                        { name: "ManaCollected", title: "Mana (M)", type: "number", 
+                            itemTemplate: function(value, item) {
+                                return percentileTemplate(value, mana60th, min60ths, max60ths, "mana");
+                            } 
+                        },
+                        { name: "CrystalI", title: "Crystal I (k)", type: "number", 
+                            itemTemplate: function(value, item) {
+                                return percentileTemplate(value, cri160th, min60ths, max60ths, "cri1");
+                            } 
+                        },
+                        { name: "CrystalII", title: "Crystal II (k)", type: "number",
+                            itemTemplate: function(value, item) {
+                                return percentileTemplate(value, cri260th, min60ths, max60ths, "cri2");
+                            } 
+                        },
+                        { name: "Islands", title: "Islands captured", type: "number",
+                            itemTemplate: function(value, item) {
+                                return percentileTemplate(value, islands60th, min60ths, max60ths, "isln");
+                            } 
+                        },
+                        { name: "DefeatedHeroes", title: "Defeated Heroes (k)", type: "number",
+                            itemTemplate: function(value, item) {
+                                return percentileTemplate(value, def60th, min60ths, max60ths, "defe");
+                            } 
+                        },
+                        { name: "AVGEnemyPower", title: "Avg Enemy Power (k)", type: "number",
+                            itemTemplate: function(value, item) {
+                                return percentileTemplate(value, avgdef60th, min60ths, max60ths, "avgd");
+                            } 
+                        },
+                        { name: "Hardness", title: "Difficulty", type: "number",
+                            itemTemplate: function(value, item) {
+                                return percentileTemplate(value, hard60th, min60ths, max60ths, "hard");
+                            } 
+                        },
+                        { name: "PlayerPower", title: "Player power (k)", type: "number",
+                            itemTemplate: function(value, item) {
+                                return percentileTemplate(value, pow60th, min60ths, max60ths, "powr");
+                            } 
+                        }
                     ]
                 });
+
+                $(".loader").addClass("hidden");
             });
         }
       </script>
 </body>
 </html>
-
