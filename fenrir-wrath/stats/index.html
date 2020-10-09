@@ -5,6 +5,8 @@
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,600,400" rel="stylesheet" type="text/css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous"></script>
+
     <link href="https://cdn.anychart.com/releases/v8/css/anychart-ui.min.css" type="text/css" rel="stylesheet">
     <link href="https://cdn.anychart.com/releases/v8/fonts/css/anychart-font.min.css" type="text/css" rel="stylesheet">
     <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
@@ -31,11 +33,11 @@
             flex-direction: column;
         }
 
+        /*SPINNER*/
         .loader {
             position: fixed;
             left: 50%;
             top: 50%;
-            z-index: 1;
             width: 150px;
             height: 150px;
             margin: -75px 0 0 -75px;
@@ -47,6 +49,17 @@
             z-index: 1000;
         }
 
+        .message {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            width: 250px;
+            height: 50px;
+            margin: -25px 0 0 -125px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
         @-webkit-keyframes spin {
             0% { -webkit-transform: rotate(0deg); }
             100% { -webkit-transform: rotate(360deg); }
@@ -56,10 +69,12 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        /*END SPINNER*/
 
+        /*LAYOUT*/
         #row1 {
             flex: 1;
-            margin-top: 45px;
+            margin-top: 56px;
             display: flex;
             flex-direction: row;
             min-height: 800px;
@@ -89,8 +104,9 @@
             margin: 0;
             padding: 0;
         }
+        /*END LAYOUT*/
 
-        /* Style the tab */
+        /* UPPER TABS */
         .tab {
             border: 1px solid #ccc;
             background-color: #f1f1f1;
@@ -100,7 +116,6 @@
             z-index: 1000;
         }
 
-        /* Style the buttons that are used to open the tab content */
         .tab button {
             background-color: inherit;
             float: left;
@@ -109,32 +124,140 @@
             cursor: pointer;
             padding: 14px 16px;
             transition: 0.3s;
+            height: 56px;
         }
 
-        /* Change background color of buttons on hover */
+        .tab button.right {
+            float: right;
+        }
+
         .tab button:hover {
             background-color: #ddd;
         }
 
-        /* Create an active/current tablink class */
         .tab button.active {
             background-color: #ccc;
         }
-
+        /* END UPPER TABS */
+        
+        /* UTILITIES */
         .hidden {
             visibility: hidden;
         }
+        /* END UTILITIES */
+
+        /* CUSTOM CSS SELECT */
+        
+        .typo, .list a {
+            font-size: 14px;
+            font-weight: 500;
+            color: #585858;
+            text-decoration: none;
+        }
+        .typo option, .list a option {
+            font-size: 14px;
+        }
+
+        .transition {
+            -webkit-transition: all .4s ease-in-out;
+            transition: all .4s ease-in-out;
+        }
+
+        body {
+            text-align: center;
+        }
+
+        .wrapper {
+            height: 56px;
+            font-size: 14px;
+        }
+
+        .list {
+            display: inline-block;
+            position: relative;
+            margin-left: 6px;
+        }
+        .list ul {
+            text-align: left;
+            position: absolute;
+            padding: 0;
+            top: 0;
+            left: 0;
+            display: none;
+            padding-top: 25px;
+        }
+        .list ul .active {
+            display: block;
+        }
+        .list li {
+            list-style: none;
+            padding: 10px;
+        }
+        .list li:first-child a {
+            color: #7d40bf;
+            padding-top: 10px;
+        }
+        .list a {
+            -webkit-transition: all .4s;
+            transition: all .4s;
+            color: #7b00ff;
+            position: relative;
+        }
+        .list a:after {
+            position: absolute;
+            content: '';
+            height: 5px;
+            width: 0;
+            left: 0;
+            background: #b066ff;
+            bottom: 0;
+            -webkit-transition: all .4s ease-out;
+            transition: all .4s ease-out;
+        }
+        .list a:hover {
+            cursor: pointer;
+            color: #b066ff;
+        }
+        .list a:hover:after {
+            width: 100%;
+        }
+
+        .placeholder {
+            border-bottom: 4px solid;
+            cursor: pointer;
+        }
+        .placeholder:hover {
+            color: #888888;
+        }
+
+        .select-wrapper .wrapper {
+            padding-top: 5px;
+        }
+
+        /* END CUSTOM CSS SELECT */
       
     </style>
   </head>
   <body>
 
     <div class="tab">
-        <button class="tablinks" onclick="openWar(event, 1893)">War 21/9/2020</button>
-        <button class="tablinks" onclick="openWar(event, 1879)">War 3/10/2020</button>
+        <button class="tablinks typo" onclick="showStats(event)">Clan stats</button>
+        <button class="tablinks select-wrapper hidden">
+            <div class="wrapper typo">
+                <div class="list">
+                    <span class="placeholder" style="opacity: 0.9;">Select Week...</span>
+                    <ul class="list__ul" style="display: block;">
+                    </ul>
+                </div>
+            </div>
+        </button>
+        <button class="tablinks typo right" onclick="openWar(event, 1879)">War 3/10/2020</button>
+        <button class="tablinks typo right" onclick="openWar(event, 1893)">War 21/9/2020</button>
     </div>
 
     <div class="loader hidden"></div>
+
+    <div class="message">Please select a dashboard</div>
     
     <div id="row1">
         <div id="pie"></div>  
@@ -145,7 +268,7 @@
     </div>
                                     
     <script>
-        var chart, bchart;
+        var chart, bchart, weekdata;
         function disposeCharts() {
             if (chart) chart.dispose();
             if (bchart) bchart.dispose();
@@ -189,7 +312,7 @@
         }
 
         function percentileTemplate(value, percentile, mins, maxs, field) {
-            return $("<div>")
+                return $("<div>")
             .attr("style", `width:100%;height:100%;padding-right:5px;border-radius:3px;background-color:${perc2color(value - percentile, mins[field], maxs[field])};filter: brightness(90%) opacity(80%);`)
             .text(value);
         } 
@@ -199,6 +322,8 @@
             anychart.theme(anychart.themes.sea);
 
             $(".loader").removeClass("hidden");
+            $(".message").addClass("hidden");
+            $(".select-wrapper").addClass("hidden");
 
             $(".tablinks").removeClass("active");
             $(event.currentTarget).addClass("active");
@@ -415,6 +540,224 @@
                 $(".loader").addClass("hidden");
             });
         }
+
+        function showStats() {
+            $(".tablinks").removeClass("active");
+            $(event.currentTarget).addClass("active");
+            $(".select-wrapper").removeClass("hidden");
+            $(".loader").removeClass("hidden");
+            $(".message").addClass("hidden");
+            $(".list__ul").empty();
+
+            fetch(`https://api.apispreadsheets.com/data/1878/?dataFormat=matrix`)
+                .then((response) => {
+                    return response.json();
+            })
+            .then((myJson) => {
+                var row = myJson.data[1].slice();
+                var weeknumbers = [...new Set(row.splice(2))];
+                var week = moment().isoWeek();
+                var populatedWeeks = [];
+                for (var i = 0; i < weeknumbers.length; i++) {
+                    if (weeknumbers[i] > week) break;
+                    var weekIndex = myJson.data[1].indexOf(weeknumbers[i]);
+                    if (myJson.data.find((element, index) => {
+                            return index > 2 && element[weekIndex].length > 0;
+                        }) != null) {
+                        populatedWeeks.push(+(weeknumbers[i]));
+                    }
+                }
+
+                populatedWeeks = populatedWeeks.sort(function(a, b) {
+                  return b - a;
+                });
+
+                weekdata = [];
+                
+                for (var i = 0; i < Math.max(populatedWeeks.length, 6); i++) {
+                    var pietreIndex = myJson.data[0].indexOf(`${populatedWeeks[i]}Pietre`);
+                    var tokenIndex = myJson.data[0].indexOf(`${populatedWeeks[i]}Token`);
+                    var raidIndex = myJson.data[0].indexOf(`${populatedWeeks[i]}Raid`);
+                    var weekSource = myJson.data.filter((v, i) => { return i > 3 && i < 32 && v[pietreIndex].length > 1 });
+                    weekdata.push({
+                        week: populatedWeeks[i],
+                        totalStones: weekSource.map((el) => {return +(el[pietreIndex])}).reduce((tot, val) => { return tot + val; }),
+                        totalTokens: weekSource.map((el) => {return +(el[tokenIndex])}).reduce((tot, val) => { return tot + val; }),
+                        totalRaids: weekSource.map((el) => {return +(el[raidIndex])}).reduce((tot, val) => { return tot + val; }),
+                        data: $.map(weekSource,
+                            (el, ix) => {
+                                return {
+                                    player: el[1],
+                                    stones: +(el[pietreIndex]),
+                                    token: +(el[tokenIndex]),
+                                    raid: +(el[raidIndex])
+                                };
+                            }    
+                        ).sort((a, b) => {
+                            return (b.stones + b.token + b.raid) - (a.stones + a.token + a.raid);
+                        })
+                    });
+
+                    $(".list__ul").append(
+                        $('<li>').append(
+                            $('<a>').text(
+                                `${moment().week(populatedWeeks[i]).startOf('isoWeek').format('DD/MM/YYYY')} to ${moment().week(populatedWeeks[i]).endOf('isoWeek').format('DD/MM/YYYY')}`
+                            ).attr(
+                                'href',
+                                populatedWeeks[i]
+                            ).on('click', function (ev) {
+                                ev.preventDefault();
+                                var index = $(this).parent().index();
+
+                                $('.placeholder').text($(this).text()).css('opacity', '1');
+
+                                console.log($('.list__ul').find('li').eq(index).html());
+
+                                $('.list__ul').find('li').eq(index).prependTo('.list__ul');
+                                $('.list__ul').toggle();
+
+                                showWeekStats(+($(this).attr('href')));
+                            })
+                        )
+                    );
+                }
+
+                $(".message").removeClass("hidden");
+                $(".loader").addClass("hidden");
+            });
+
+        }
+
+        function showWeekStats(week) {
+            disposeCharts();
+            $(".message").addClass("hidden");
+            $(".loader").removeClass("hidden");
+
+            var weekNumbers = weekdata.find((el) => { return el.week == week}).data;
+
+            var stoneTarget = 4600;
+            var raidTarget = 1800;
+            var tokenTarget = 3500;
+
+            var min60ths = {
+                stones: Math.min.apply(Math, $.map(weekNumbers, (el, ix) => { return el.stones - stoneTarget })),
+                raid: Math.min.apply(Math, $.map(weekNumbers, (el, ix) => { return el.raid - raidTarget })),
+                token: Math.min.apply(Math, $.map(weekNumbers, (el, ix) => { return el.token - tokenTarget }))
+            }; 
+            
+            var max60ths = {
+                stones: Math.max.apply(Math, $.map(weekNumbers, (el, ix) => { return el.stones - stoneTarget })),
+                raid: Math.max.apply(Math, $.map(weekNumbers, (el, ix) => { return el.raid - raidTarget })),
+                token: Math.max.apply(Math, $.map(weekNumbers, (el, ix) => { return el.token - tokenTarget }))
+            }; 
+
+            // create a chart
+            bchart = anychart.bar();
+            bchart.palette(anychart.palettes.sea);
+            bchart.title("Total clan results");
+            bchart.legend(true);
+
+            // enable the value stacking mode
+            bchart.yScale().stackMode("value");
+
+            // create bar series
+            var series1 = bchart.bar(weekNumbers.map((el) => {
+                return [el.player, el.stones];
+            }));
+            var series2 = bchart.bar(weekNumbers.map((el) => {
+                return [el.player, el.token];
+            }));
+            var series3 = bchart.bar(weekNumbers.map((el) => {
+                return [el.player, el.raid];
+            }));
+
+            series1.name("Portal stones");
+            series2.name("Clan Tokens");
+            series3.name("Raid points (k)");
+
+            bchart.container("bars");
+            bchart.draw();
+
+            $("#pie").html(`
+                <h1 style="font-size:30px;font-color:#262626">Clan Performance</h1>
+                <br>
+                <div style="display:flex;flex-direction:column;">
+                    <div style="padding:10px;display:flex;flex:1">
+                        <p style="display:flex;flex:1;margin-top:20px;font-size:20px">Portal Stones:</p>
+                        <p style="margin-top:20px;font-size:20px">${weekdata.find((el) => { return el.week == week}).totalStones.toLocaleString('it')}</p>
+                    </div>
+                    <div style="padding:10px;display:flex;flex:1">
+                        <p style="display:flex;flex:1;margin-top:20px;font-size:20px">Clan Tokens:</p>
+                        <p style="margin-top:20px;font-size:20px">${weekdata.find((el) => { return el.week == week}).totalTokens.toLocaleString('it')}</p>
+                    </div>
+                    <div style="padding:10px;display:flex;flex:1">
+                        <p style="display:flex;flex:1;margin-top:20px;font-size:20px">Raid Points (k):</p>
+                        <p style="margin-top:20px;font-size:20px">${weekdata.find((el) => { return el.week == week}).totalRaids.toLocaleString('it')}</p>
+                    </div>
+                </div>
+                <h1 style="font-size:30px;font-color:#262626">Clan Targets</h1>
+                <br>
+                <div style="display:flex;flex-direction:column;">
+                    <div style="padding:10px;display:flex;flex:1">
+                        <p style="display:flex;flex:1;margin-top:20px;font-size:20px">Portal Stones:</p>
+                        <p style="margin-top:20px;font-size:20px">${stoneTarget.toLocaleString('it')}</p>
+                    </div>
+                    <div style="padding:10px;display:flex;flex:1">
+                        <p style="display:flex;flex:1;margin-top:20px;font-size:20px">Clan Tokens:</p>
+                        <p style="margin-top:20px;font-size:20px">${tokenTarget.toLocaleString('it')}</p>
+                    </div>
+                    <div style="padding:10px;display:flex;flex:1">
+                        <p style="display:flex;flex:1;margin-top:20px;font-size:20px">Raid Points (k):</p>
+                        <p style="margin-top:20px;font-size:20px">${raidTarget.toLocaleString('it')}</p>
+                    </div>
+                </div>
+            `);
+
+            $("#table").jsGrid({
+                width: "100%",
+                height: "1050px",
+                sorting: true,
+        
+                data: weekNumbers,
+
+                fields: [
+                    { name: "player", title: "Player", type: "text", width: 150 },
+                    { name: "stones", title: "Portal Stones", type: "number", 
+                        itemTemplate: function(value, item) {
+                            return percentileTemplate(value, stoneTarget, min60ths, max60ths, "stones");
+                        } 
+                    },
+                    { name: "token", title: "Clan Tokens", type: "number", 
+                        itemTemplate: function(value, item) {
+                            return percentileTemplate(value, tokenTarget, min60ths, max60ths, "token");
+                        } 
+                    },
+                    { name: "raid", title: "Raid Points", type: "number",
+                        itemTemplate: function(value, item) {
+                            return percentileTemplate(value, raidTarget, min60ths, max60ths, "raid");
+                        } 
+                    }
+                ]
+            });
+
+            $(".loader").addClass("hidden");
+        }
+
+        $(document).ready(()=> {
+            
+            console.clear();
+            moment().locale('it');
+
+            var el = {};
+
+            $('.placeholder').on('click', function (ev) {
+                $('.placeholder').css('opacity', '0');
+                $('.list__ul').toggle();
+            });
+                
+        });
+
       </script>
 </body>
 </html>
+
