@@ -119,6 +119,9 @@
                         emptyShield.scale = Math.floor((TBARH - (5 * window.devicePixelRatio)) / emptyShield.getBounds().height * 100)/100;
                         emptyShield.x = 2;
                         emptyShield.y = 2;
+                        var hit = new createjs.Shape();
+                        hit.graphics.beginFill("#000").drawRect(0, 0, emptyShield.getBounds().width, emptyShield.getBounds().height).endFill();
+                        emptyShield.hitArea = hit;
                         emptyShield.addEventListener('mousedown', function(event) {
                             event.nativeEvent.preventDefault();
                             iconRect.x = 0;
@@ -126,14 +129,19 @@
                             selectedShield = null;
                         }, false);
 
+                        var iconRect = new createjs.Shape();
+                        iconRect.graphics.beginFill("rgba(180,180,180,0.5)").drawRect(0, 0, TBARH, TBARH);
+
                         var blueShield = new createjs.Bitmap(scudo);
                         blueShield.scale = Math.floor((TBARH - (5 * window.devicePixelRatio)) / blueShield.getBounds().height * 100)/100;
                         blueShield.x = emptyShield.x + TBARH;
                         blueShield.y = 2;
+                        blueShield.filters = [
+                                new createjs.ColorFilter(0,0,0,1, 38,75,150,0)
+                        ];
+                        blueShield.cache(0, 0, blueShield.getBounds().width, blueShield.getBounds().height);
+                        blueShield.hitArea = hit;
 
-                        var iconRect = new createjs.Shape();
-                        iconRect.graphics.beginFill("rgba(180,180,180,0.5)").drawRect(0, 0, TBARH, TBARH);
-                        
                         blueShield.addEventListener('pressup', function(event) {
                             event.nativeEvent.preventDefault();
                             iconRect.x = TBARH;
@@ -142,7 +150,12 @@
                         }, false);
 
                         var redShield = blueShield.clone();
+                        redShield.filters = [
+                                new createjs.ColorFilter(0,0,0,1, 191,33,47,0)
+                        ];
+                        redShield.cache(0, 0, redShield.getBounds().width, redShield.getBounds().height);
                         redShield.x = redShield.x + TBARH;
+                        redShield.hitArea = hit;
                         redShield.addEventListener('pressup', function(event) {
                             event.nativeEvent.preventDefault();
                             iconRect.x = TBARH * 2;
@@ -151,28 +164,18 @@
                         }, false);
 
                         var greenShield = blueShield.clone();
+                        greenShield.filters = [
+                                new createjs.ColorFilter(0,0,0,1, 0,111,60,0)
+                        ];
+                        greenShield.cache(0, 0, greenShield.getBounds().width, greenShield.getBounds().height);
                         greenShield.x = redShield.x + TBARH;
+                        greenShield.hitArea = hit;
                         greenShield.addEventListener('pressup', function(event) {
                             event.nativeEvent.preventDefault();
                             iconRect.x = TBARH * 3;
                             toolbar.update();
                             selectedShield = greenShield;
                         }, false);
-
-                        if (!window.location.href.startsWith("file")) {
-                            blueShield.filters = [
-                                 new createjs.ColorFilter(0,0,0,1, 38,75,150,0)
-                            ];
-                            blueShield.cache(0, 0, blueShield.getBounds().width, blueShield.getBounds().height);
-                            redShield.filters = [
-                                 new createjs.ColorFilter(0,0,0,1, 191,33,47,0)
-                            ];
-                            redShield.cache(0, 0, redShield.getBounds().width, redShield.getBounds().height);
-                            greenShield.filters = [
-                                 new createjs.ColorFilter(0,0,0,1, 0,111,60,0)
-                            ];
-                            greenShield.cache(0, 0, greenShield.getBounds().width, greenShield.getBounds().height);
-                        }
 
                         toolbar.addChild(iconRect);
                         toolbar.addChild(emptyShield);
@@ -184,6 +187,21 @@
                         shieldc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH * 4, TBARH);
                         toolbar.addChild(shieldc);
 
+                        var download = queue.getResult("download");
+                        var downloadB = new createjs.Bitmap(download);
+                        downloadB.scale = Math.floor(TBARH / downloadB.getBounds().height * 100)/100;
+                        downloadB.x = TBARH * 4 + 1;
+                        downloadB.hitArea = hit;
+                        downloadB.addEventListener('pressup', function(event) {
+                            exportJpeg();
+                        }, false);
+                        toolbar.addChild(downloadB);
+
+                        var downc = new createjs.Shape();
+                        downc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH, TBARH);
+                        downc.x = downloadB.x;
+                        toolbar.addChild(downc);
+
                         toolbar.update();
 
                         DrawMap();
@@ -193,6 +211,7 @@
                     queue.loadFile({src:"mappaVICINI.jpg", id:"vicini"});
                     queue.loadFile({src:"shield.png", id:"scudo"});
                     queue.loadFile({src:"forbidden.png", id:"divieto"});
+                    queue.loadFile({src:"download.png", id:"download"});
 
                 }, 100);
                 
@@ -267,6 +286,16 @@
                 }
 
                 stage.update();
+            }
+
+            function exportJpeg() {
+                let downloadLink = document.createElement('a');
+                downloadLink.setAttribute('download', 'WarMap.png');
+                let canvas = document.getElementById('canvas');
+                let dataURL = canvas.toDataURL('image/png');
+                let url = dataURL.replace(/^data:image\/png/,'data:application/octet-stream');
+                downloadLink.setAttribute('href', url);
+                downloadLink.click();
             }
 
             function cellPress(stageX, stageY) {
