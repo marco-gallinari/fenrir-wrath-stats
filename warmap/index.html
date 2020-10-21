@@ -41,12 +41,18 @@
 
             var mapsLayout = [];
 
+            var TBARH = 32 * window.devicePixelRatio;
+
+            var selectedShield = null;
+
             function resize() {
-                H = $(window).height() - 50;
+                H = ($(window).height() - 50);
                 $("#canvas").height(H + "px").attr("height", H);
+                $("#toolbar").height(TBARH + "px").attr("height", TBARH);
             }
             $(document).ready(function(){
                 $("#canvas").css("backgroundColor", "#ff0000");
+                $("#canvas").css("top", TBARH + "px");
                 resize();
                 resize();
                 
@@ -108,39 +114,48 @@
                         var scudo = queue.getResult("scudo");
                         var toolbar = new createjs.Stage("toolbar");
 
+                        var emptyShield = new createjs.Shape();
+                        emptyShield.graphics.beginFill("rgba(0,0,0,0)").drawRect(0, 0, TBARH, TBARH);
+                        emptyShield.addEventListener('mousedown', function(event) {
+                            event.nativeEvent.preventDefault();
+                            iconRect.x = 0;
+                            toolbar.addChild(iconRect);
+                            toolbar.setChildIndex(iconRect, 0);
+                            toolbar.update();
+                            selectedShield = null;
+                        }, false);
+
                         var blueShield = new createjs.Bitmap(scudo);
-                        blueShield.scale = Math.floor(28 / blueShield.getBounds().height * 100)/100;
-                        blueShield.x = 7;
-                        blueShield.y = 5;
+                        blueShield.scale = Math.floor((TBARH - (5 * window.devicePixelRatio)) / blueShield.getBounds().height * 100)/100;
+                        blueShield.x = TBARH + 7;
+                        blueShield.y = 7;
 
                         var iconRect = new createjs.Shape();
-                        iconRect.graphics.beginFill("rgba(211,211,211,0.5)").drawRect(0, 0, 32, 32);
+                        iconRect.graphics.beginFill("rgba(211,211,211,0.5)").drawRect(0, 0, TBARH, TBARH);
                         
                         blueShield.addEventListener('mousedown', function(event) {
                             event.nativeEvent.preventDefault();
-                            toolbar.addChild(iconRect);
-                            toolbar.setChildIndex(iconRect, 0);
+                            iconRect.x = TBARH;
                             toolbar.update();
+                            selectedShield = blueShield;
                         }, false);
 
                         var redShield = blueShield.clone();
-                        redShield.x = redShield.x + 32;
+                        redShield.x = redShield.x + TBARH;
                         redShield.addEventListener('mousedown', function(event) {
                             event.nativeEvent.preventDefault();
-                            iconRect.x = 32;
-                            toolbar.addChild(iconRect);
-                            toolbar.setChildIndex(iconRect, 0);
+                            iconRect.x = TBARH * 2;
                             toolbar.update();
+                            selectedShield = redShield;
                         }, false);
 
                         var greenShield = blueShield.clone();
-                        greenShield.x = redShield.x + 32;
+                        greenShield.x = redShield.x + TBARH;
                         greenShield.addEventListener('mousedown', function(event) {
                             event.nativeEvent.preventDefault();
-                            iconRect.x = 64;
-                            toolbar.addChild(iconRect);
-                            toolbar.setChildIndex(iconRect, 0);
+                            iconRect.x = TBARH * 3;
                             toolbar.update();
+                            selectedShield = greenShield;
                         }, false);
 
                         if (!window.location.href.startsWith("file")) {
@@ -158,9 +173,15 @@
                             greenShield.cache(0, 0, greenShield.getBounds().width, greenShield.getBounds().height);
                         }
 
+                        toolbar.addChild(iconRect);
+                        toolbar.addChild(emptyShield);
                         toolbar.addChild(blueShield);
                         toolbar.addChild(redShield);
                         toolbar.addChild(greenShield);
+                            
+                        var shieldc = new createjs.Shape();
+                        shieldc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH * 4, TBARH);
+                        toolbar.addChild(shieldc);
 
                         toolbar.update();
 
@@ -216,6 +237,10 @@
                     var map1 = neighbourMap.clone();
                     map1.scale = SCALE;
                     map1.x = i * MAPW;
+                    map1.addEventListener('mousedown', function(event) {
+                        //event.nativeEvent.preventDefault();
+                        alert(JSON.stringify(event));
+                    }, false);
                     stage.addChild(map1);
                 }
 
