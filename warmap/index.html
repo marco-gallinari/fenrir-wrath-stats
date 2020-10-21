@@ -112,23 +112,24 @@
                         neighbourMap = new createjs.Bitmap(vicini);
                         
                         var scudo = queue.getResult("scudo");
+                        var divieto = queue.getResult("divieto");
                         var toolbar = new createjs.Stage("toolbar");
 
-                        var emptyShield = new createjs.Shape();
-                        emptyShield.graphics.beginFill("rgba(0,0,0,0)").drawRect(0, 0, TBARH, TBARH);
+                        var emptyShield = new createjs.Bitmap(divieto);
+                        emptyShield.scale = Math.floor((TBARH - (5 * window.devicePixelRatio)) / emptyShield.getBounds().height * 100)/100;
+                        emptyShield.x = 2;
+                        emptyShield.y = 2;
                         emptyShield.addEventListener('mousedown', function(event) {
                             event.nativeEvent.preventDefault();
                             iconRect.x = 0;
-                            toolbar.addChild(iconRect);
-                            toolbar.setChildIndex(iconRect, 0);
                             toolbar.update();
                             selectedShield = null;
                         }, false);
 
                         var blueShield = new createjs.Bitmap(scudo);
                         blueShield.scale = Math.floor((TBARH - (5 * window.devicePixelRatio)) / blueShield.getBounds().height * 100)/100;
-                        blueShield.x = TBARH + 7;
-                        blueShield.y = 7;
+                        blueShield.x = emptyShield.x + TBARH;
+                        blueShield.y = 2;
 
                         var iconRect = new createjs.Shape();
                         iconRect.graphics.beginFill("rgba(211,211,211,0.5)").drawRect(0, 0, TBARH, TBARH);
@@ -191,6 +192,7 @@
                     queue.loadFile({src:"mappaCLAN.jpg", id:"clan"});
                     queue.loadFile({src:"mappaVICINI.jpg", id:"vicini"});
                     queue.loadFile({src:"shield.png", id:"scudo"});
+                    queue.loadFile({src:"forbidden.png", id:"divieto"});
 
                 }, 100);
                 
@@ -238,8 +240,10 @@
                     map1.scale = SCALE;
                     map1.x = i * MAPW;
                     map1.addEventListener('mousedown', function(event) {
-                        //event.nativeEvent.preventDefault();
-                        alert(JSON.stringify(event));
+                        var x = event.stageX / SCALE;
+                        var y = event.stageY / SCALE;
+                        var row = y / 208;
+                        var column = x / 208;
                     }, false);
                     stage.addChild(map1);
                 }
