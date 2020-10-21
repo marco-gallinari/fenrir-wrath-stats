@@ -319,7 +319,7 @@
                         cell.symbol = new createjs.Bitmap(selectedShield.cacheCanvas);
                         // cell.symbol.cacheCanvas = selectedShield.cacheCanvas;
                         // cell.symbol.bitmapCache = selectedShield.bitmapCache;
-                        cell.symbol.scale = Math.floor((150 * SCALE) / TBARH  * 100)/100;
+                        cell.symbol.scale = Math.floor((150 * window.devicePixelRatio * SCALE) / TBARH  * 100)/100;
                         cell.symbol.x = m * MAPW + column * 208 * SCALE + 25 * SCALE;
                         cell.symbol.y = row * 208 * SCALE + 25 * SCALE;
                         stage.addChild(cell.symbol);
