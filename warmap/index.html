@@ -114,20 +114,34 @@
                         blueShield.y = 5;
 
                         var iconRect = new createjs.Shape();
-                        iconRect.graphics.beginFill("rgba(0,0,255,0.5)").drawRect(0, 0, 32, 32);
+                        iconRect.graphics.beginFill("rgba(211,211,211,0.5)").drawRect(0, 0, 32, 32);
                         
-
-                        blueShield.addEventListener( 'mousedown', function( event ){
+                        blueShield.addEventListener('mousedown', function(event) {
                             event.nativeEvent.preventDefault();
-                            toolbar.addChild(rect);
-                            toolbar.setChildIndex( rect, 0);
+                            toolbar.addChild(iconRect);
+                            toolbar.setChildIndex(iconRect, 0);
                             toolbar.update();
-                        }, false );
+                        }, false);
 
                         var redShield = blueShield.clone();
                         redShield.x = redShield.x + 32;
+                        redShield.addEventListener('mousedown', function(event) {
+                            event.nativeEvent.preventDefault();
+                            iconRect.x = 32;
+                            toolbar.addChild(iconRect);
+                            toolbar.setChildIndex(iconRect, 0);
+                            toolbar.update();
+                        }, false);
+
                         var greenShield = blueShield.clone();
                         greenShield.x = redShield.x + 32;
+                        greenShield.addEventListener('mousedown', function(event) {
+                            event.nativeEvent.preventDefault();
+                            iconRect.x = 64;
+                            toolbar.addChild(iconRect);
+                            toolbar.setChildIndex(iconRect, 0);
+                            toolbar.update();
+                        }, false);
 
                         if (!window.location.href.startsWith("file")) {
                             blueShield.filters = [
