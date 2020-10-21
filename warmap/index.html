@@ -41,9 +41,11 @@
 
             var mapsLayout = [];
 
-            var TBARH = 32 * window.devicePixelRatio;
+            var TBARH = 45 * window.devicePixelRatio;
 
             var selectedShield = null;
+
+            var lockScroll = false;
 
             function resize() {
                 H = ($(window).height() - 50);
@@ -100,11 +102,9 @@
                     queue.on("complete", function(event) {
                         stage = new createjs.Stage("canvas");
 
-                        // Enable touch events while allowing touch events to bubble up to the document.
-                        createjs.Touch.enable( stage, false, true );
-
-                        // Don't let the stage to automatically prevent default touch events.
+                        createjs.Touch.enable( stage, true, true );
                         stage.preventSelection = false;
+                        stage.enableMouseOver(100);
 
                         var clan = queue.getResult("clan");
                         var vicini = queue.getResult("vicini");
@@ -132,9 +132,9 @@
                         blueShield.y = 2;
 
                         var iconRect = new createjs.Shape();
-                        iconRect.graphics.beginFill("rgba(211,211,211,0.5)").drawRect(0, 0, TBARH, TBARH);
+                        iconRect.graphics.beginFill("rgba(180,180,180,0.5)").drawRect(0, 0, TBARH, TBARH);
                         
-                        blueShield.addEventListener('mousedown', function(event) {
+                        blueShield.addEventListener('pressup', function(event) {
                             event.nativeEvent.preventDefault();
                             iconRect.x = TBARH;
                             toolbar.update();
@@ -143,7 +143,7 @@
 
                         var redShield = blueShield.clone();
                         redShield.x = redShield.x + TBARH;
-                        redShield.addEventListener('mousedown', function(event) {
+                        redShield.addEventListener('pressup', function(event) {
                             event.nativeEvent.preventDefault();
                             iconRect.x = TBARH * 2;
                             toolbar.update();
@@ -152,7 +152,7 @@
 
                         var greenShield = blueShield.clone();
                         greenShield.x = redShield.x + TBARH;
-                        greenShield.addEventListener('mousedown', function(event) {
+                        greenShield.addEventListener('pressup', function(event) {
                             event.nativeEvent.preventDefault();
                             iconRect.x = TBARH * 3;
                             toolbar.update();
@@ -208,25 +208,6 @@
                 mapsLayout = [];
                 for (var m = 0; m < settings.maps; m++) {
                     var mapLayout = JSON.parse(JSON.stringify(mapSlots));
-                    if (location.queryString.debug == "true") {
-                        for (var x = 0; x < mapLayout.length; x++) {
-                            var row = mapLayout[x];
-                            for (var y = 0; y < row.length; y++) {
-                                if (row[y].drawable) {
-                                    var rect = new createjs.Shape();
-                                    rect.graphics.beginFill("rgba(0,0,255,0.5)").drawRect(0, 0, 208 * SCALE, 208 * SCALE);
-                                    rect.x = m * MAPW + y * 208 * SCALE;
-                                    rect.y = x * 208 * SCALE;
-                                    row[y].background = rect;
-                                    var circle = new createjs.Shape();
-                                    circle.graphics.beginStroke("DeepSkyBlue").drawCircle(0, 0, 80 * SCALE);
-                                    circle.x = 104 * SCALE + m * MAPW + y * 208 * SCALE;
-                                    circle.y = 104 * SCALE + x * 208 * SCALE;
-                                    row[y].symbol = circle;
-                                }
-                            }
-                        }
-                    }
                     mapsLayout.push(mapLayout);
                 }
 
@@ -239,12 +220,6 @@
                     var map1 = neighbourMap.clone();
                     map1.scale = SCALE;
                     map1.x = i * MAPW;
-                    map1.addEventListener('mousedown', function(event) {
-                        var x = event.stageX / SCALE;
-                        var y = event.stageY / SCALE;
-                        var row = y / 208;
-                        var column = x / 208;
-                    }, false);
                     stage.addChild(map1);
                 }
 
@@ -256,6 +231,25 @@
                     map2.x = clanMap.x + ((i + 1) * MAPW);
                     stage.addChild(map2);
                 }
+
+                stage.addEventListener('mousedown', function(event) {
+                        console.log("down");
+                        cellPress(event.stageX, event.stageY);
+                    }, false);
+                
+                stage.addEventListener('pressmove', function(event) {
+                        console.log("move");
+                        if(event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove") {
+                            console.log("pressed");
+                            cellPress(event.stageX, event.stageY);
+                        } 
+                        if(lockScroll == true) event.nativeEvent.preventDefault();
+                    }, false);
+
+                stage.addEventListener('pressup', function(event) {
+                        console.log("release lock");
+                        lockScroll = false;
+                    }, false);
 
                 for (var m = 0; m < mapsLayout.length; m++) {
                     var mapLayout = mapsLayout[m];
@@ -273,6 +267,42 @@
                 }
 
                 stage.update();
+            }
+
+            function cellPress(stageX, stageY) {
+                var m = Math.floor(stageX / MAPW);
+                var x = (stageX - m * MAPW) / SCALE;
+                var y = stageY / SCALE;
+                var row = Math.floor(y / 208);
+                var column = Math.floor(x / 208);
+                var cell = mapsLayout[m][row][column];
+                if (!cell) return;
+                if (cell.drawable) {
+                    console.log("acquire lock");
+                    lockScroll = true;
+                    if (cell.symbol) stage.removeChild(cell.symbol);
+                    if (cell.background) stage.removeChild(cell.background);
+                    if (selectedShield == null) {
+                        cell.symbol = null;
+                        cell.background = null;
+                    }
+                    else {
+                        cell.symbol = selectedShield.clone();
+                        cell.symbol.cacheCanvas = selectedShield.cacheCanvas;
+                        cell.symbol.bitmapCache = selectedShield.bitmapCache;
+                        cell.symbol.x = m * MAPW + column * 208 * SCALE + TBARH * SCALE / 2;
+                        cell.symbol.y = row * 208 * SCALE + TBARH * SCALE / 2;
+                        stage.addChild(cell.symbol);
+
+                        cell.background = new createjs.Shape();
+                        cell.background.graphics.beginFill("rgba(150,150,150,0.5)").drawRect(0, 0, 208 * SCALE, 208 * SCALE);
+                        cell.background.x = m * MAPW + column * 208 * SCALE;
+                        cell.background.y = row * 208 * SCALE;
+                        stage.addChild(cell.background);
+                        stage.addChild(cell.symbol);
+                    }
+                    stage.update();
+                }
             }
 
         </script>
