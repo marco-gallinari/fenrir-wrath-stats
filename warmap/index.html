@@ -46,151 +46,6 @@
 
             var lockScroll = false;
 
-            function hasDrawings() {
-                return mapsLayout.find(
-                    (mapLayout) => {
-                        return mapLayout.find(
-                            (row) => {
-                                return row.find(
-                                    (el) => {
-                                        return el.symbol || el.bitmap;
-                                    }
-                                )
-                            }
-                        )
-                    }
-                ) != undefined;
-            }
-
-            function resize() {
-                if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
-                    H = (window.innerHeight - 50);
-                }else{
-                    H = ($(window).height() - 50);
-                }
-                $("#canvas").height(H + "px").attr("height", H);
-                $("#toolbar").height(TBARH + "px").attr("height", TBARH);
-                $("#canvas").css("top", TBARH + "px");
-            }
-            
-            function handleInteraction(event) {
-                if (event.target.selected) event.target.alpha = 1;
-                else event.target.alpha = (event.type == "mouseover") ? 1 : 0.5; 
-                toolbar.update();
-            }
-
-            function applyToolbarSettings() {
-                var label1 = toolbar.getChildByName("3maps");
-                var label2 = toolbar.getChildByName("5maps");
-                var label3 = toolbar.getChildByName("7maps");
-                var sLabelBG = toolbar.getChildByName("mapselBG");
-                if (settings.maps == 3) {
-                    label1.selected = true;
-                    label2.selected = false;
-                    label3.selected = false;
-                    label1.alpha = 1;
-                    label2.alpha = 0.5;
-                    label3.alpha = 0.5;
-                    sLabelBG.x = 0;
-                }
-                else if (settings.maps == 5) {
-                    label1.selected = false;
-                    label2.selected = true;
-                    label3.selected = false;
-                    label1.alpha = 0.5;
-                    label2.alpha = 1;
-                    label3.alpha = 0.5;
-                    sLabelBG.x = label2.x;
-
-                }
-                else if (settings.maps == 7) {
-                    label1.selected = false;
-                    label2.selected = false;
-                    label3.selected = true;
-                    label1.alpha = 0.5;
-                    label2.alpha = 0.5;
-                    label3.alpha = 1;
-                    sLabelBG.x = label3.x;
-                }
-
-                
-                var bBG = toolbar.getChildByName("bBG");
-                var rBG = toolbar.getChildByName("rBG");
-                var gBG = toolbar.getChildByName("gBG");
-                if (settings.selectedBackgroundSer == null) {
-                    bBG.selected = false;
-                    rBG.selected = false;
-                    gBG.selected = false;
-                    bBG.alpha = 0.4;
-                    rBG.alpha = 0.4;
-                    gBG.alpha = 0.4;
-                }
-                else if (settings.selectedBackgroundSer == "blue") {
-                    bBG.selected = true;
-                    rBG.selected = false;
-                    gBG.selected = false;
-                    bBG.alpha = 1;
-                    rBG.alpha = 0.4;
-                    gBG.alpha = 0.4;
-                }
-                else if (settings.selectedBackgroundSer == "red") {
-                    bBG.selected = false;
-                    rBG.selected = true;
-                    gBG.selected = false;
-                    bBG.alpha = 0.4;
-                    rBG.alpha = 1;
-                    gBG.alpha = 0.4;
-                }
-                else if (settings.selectedBackgroundSer == "green") {
-                    bBG.selected = false;
-                    rBG.selected = false;
-                    gBG.selected = true;
-                    bBG.alpha = 0.4;
-                    rBG.alpha = 0.4;
-                    gBG.alpha = 1;
-                }
-
-                toolbar.update();
-            }
-
-            function initializeMapSlots() {
-                // 16 * 8 TODO: load from saved one
-                mapSlots = [];
-                for (var x = 0; x < 16; x++) {
-                    var mapRow = [];
-                    for (var y = 0; y < 8; y++) {
-                        if (
-                            (x == 0 && y < 6) ||
-                            (x == 1 && (y > 0 && y < 5)) ||
-                            (x == 2 && (y > 1 && y < 4)) ||
-                            (x == 3 && y == 6) ||
-                            (x == 4 && (y == 5 || y == 6)) ||
-                            ((x == 6 || x == 7) && y == 4) ||
-                            (x == 9 && (y == 2 || y == 5 || y == 6)) ||
-                            ((x == 11 || x == 12) && (y == 2)) ||
-                            (x == 14 && (y == 0 || y == 7))  ||
-                            (x == 15 && (y < 2 || y > 5)) 
-                            ) {
-                            mapRow.push({
-                                drawable: false
-                            });
-                            continue;
-                        }
-                        if (x == 15 && y == 4) {
-                            mapRow.push({
-                                drawable: false,
-                                citadel: true
-                            });
-                            continue;
-                        }
-                        mapRow.push({
-                            drawable: true
-                        });
-                    }
-                    mapSlots.push(mapRow);
-                }
-            }
-
             $(document).ready(function(){
 
                 resize();
@@ -449,12 +304,14 @@
 
                         var startDownload = startBackground + 4 * TBARH;
 
+                        var dhit = new createjs.Shape();
                         var download = queue.getResult("download");
                         var downloadB = new createjs.Bitmap(download);
+                        dhit.graphics.beginFill("#000").drawRect(0, 0, downloadB.getBounds().width, downloadB.getBounds().height);
                         downloadB.scale = Math.floor(TBARH / downloadB.getBounds().height * 100)/100;
                         downloadB.x = startDownload + TBARH / 2 - (downloadB.getBounds().width * downloadB.scale / 2);
                         downloadB.y = TBARH / 2 - (downloadB.getBounds().height * downloadB.scale / 2);
-                        downloadB.hitArea = hit;
+                        downloadB.hitArea = dhit;
                         downloadB.addEventListener('pressup', function(event) {
                             exportJpeg();
                         }, false);
@@ -464,6 +321,26 @@
                         downc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH, TBARH);
                         downc.x = startDownload;
                         toolbar.addChild(downc);
+                        
+                        var chit = new createjs.Shape();
+                        var clear = queue.getResult("clear");
+                        var clearB = new createjs.Bitmap(clear);
+                        chit.graphics.beginFill("#000").drawRect(0, 0, clearB.getBounds().width, clearB.getBounds().height);
+                        clearB.scale = Math.floor(TBARH / clearB.getBounds().height * 100)/100;
+                        clearB.x = startDownload + TBARH + TBARH / 2 - (clearB.getBounds().width * clearB.scale / 2);
+                        clearB.y = TBARH / 2 - (clearB.getBounds().height * clearB.scale / 2);
+                        clearB.hitArea = chit;
+                        clearB.addEventListener('pressup', function(event) {
+                            if (hasDrawings() && confirm("Are you sure? This will reset current map.")) {
+                                clearCanvas();
+                            }
+                        }, false);
+                        toolbar.addChild(clearB);
+
+                        var clearc = new createjs.Shape();
+                        clearc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH, TBARH);
+                        clearc.x = startDownload + TBARH;
+                        toolbar.addChild(clearc);
 
                         toolbar.update();
 
@@ -476,10 +353,140 @@
                     queue.loadFile({src:"shield.png", id:"scudo"});
                     queue.loadFile({src:"forbidden.png", id:"divieto"});
                     queue.loadFile({src:"download.png", id:"download"});
+                    queue.loadFile({src:"clear.png", id:"clear"});
 
                 }, 100);
                 
             });
+
+            function applyToolbarSettings() {
+                var label1 = toolbar.getChildByName("3maps");
+                var label2 = toolbar.getChildByName("5maps");
+                var label3 = toolbar.getChildByName("7maps");
+                var sLabelBG = toolbar.getChildByName("mapselBG");
+                if (settings.maps == 3) {
+                    label1.selected = true;
+                    label2.selected = false;
+                    label3.selected = false;
+                    label1.alpha = 1;
+                    label2.alpha = 0.5;
+                    label3.alpha = 0.5;
+                    sLabelBG.x = 0;
+                }
+                else if (settings.maps == 5) {
+                    label1.selected = false;
+                    label2.selected = true;
+                    label3.selected = false;
+                    label1.alpha = 0.5;
+                    label2.alpha = 1;
+                    label3.alpha = 0.5;
+                    sLabelBG.x = label2.x;
+
+                }
+                else if (settings.maps == 7) {
+                    label1.selected = false;
+                    label2.selected = false;
+                    label3.selected = true;
+                    label1.alpha = 0.5;
+                    label2.alpha = 0.5;
+                    label3.alpha = 1;
+                    sLabelBG.x = label3.x;
+                }
+
+                
+                var bBG = toolbar.getChildByName("bBG");
+                var rBG = toolbar.getChildByName("rBG");
+                var gBG = toolbar.getChildByName("gBG");
+                if (settings.selectedBackgroundSer == null) {
+                    bBG.selected = false;
+                    rBG.selected = false;
+                    gBG.selected = false;
+                    bBG.alpha = 0.4;
+                    rBG.alpha = 0.4;
+                    gBG.alpha = 0.4;
+                }
+                else if (settings.selectedBackgroundSer == "blue") {
+                    bBG.selected = true;
+                    rBG.selected = false;
+                    gBG.selected = false;
+                    bBG.alpha = 1;
+                    rBG.alpha = 0.4;
+                    gBG.alpha = 0.4;
+                }
+                else if (settings.selectedBackgroundSer == "red") {
+                    bBG.selected = false;
+                    rBG.selected = true;
+                    gBG.selected = false;
+                    bBG.alpha = 0.4;
+                    rBG.alpha = 1;
+                    gBG.alpha = 0.4;
+                }
+                else if (settings.selectedBackgroundSer == "green") {
+                    bBG.selected = false;
+                    rBG.selected = false;
+                    gBG.selected = true;
+                    bBG.alpha = 0.4;
+                    rBG.alpha = 0.4;
+                    gBG.alpha = 1;
+                }
+
+                toolbar.update();
+            }
+            
+            function handleInteraction(event) {
+                if (event.target.selected) event.target.alpha = 1;
+                else event.target.alpha = (event.type == "mouseover") ? 1 : 0.5; 
+                toolbar.update();
+            }
+
+            function resize() {
+                if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
+                    H = (window.innerHeight - 50);
+                }else{
+                    H = ($(window).height() - 50);
+                }
+                $("#canvas").height(H + "px").attr("height", H);
+                $("#toolbar").height(TBARH + "px").attr("height", TBARH);
+                $("#canvas").css("top", TBARH + "px");
+            }
+
+            function initializeMapSlots() {
+                // 16 * 8 TODO: load from saved one
+                mapSlots = [];
+                for (var x = 0; x < 16; x++) {
+                    var mapRow = [];
+                    for (var y = 0; y < 8; y++) {
+                        if (
+                            (x == 0 && y < 6) ||
+                            (x == 1 && (y > 0 && y < 5)) ||
+                            (x == 2 && (y > 1 && y < 4)) ||
+                            (x == 3 && y == 6) ||
+                            (x == 4 && (y == 5 || y == 6)) ||
+                            ((x == 6 || x == 7) && y == 4) ||
+                            (x == 9 && (y == 2 || y == 5 || y == 6)) ||
+                            ((x == 11 || x == 12) && (y == 2)) ||
+                            (x == 14 && (y == 0 || y == 7))  ||
+                            (x == 15 && (y < 2 || y > 5)) 
+                            ) {
+                            mapRow.push({
+                                drawable: false
+                            });
+                            continue;
+                        }
+                        if (x == 15 && y == 4) {
+                            mapRow.push({
+                                drawable: false,
+                                citadel: true
+                            });
+                            continue;
+                        }
+                        mapRow.push({
+                            drawable: true
+                        });
+                    }
+                    mapSlots.push(mapRow);
+                }
+            }
 
             function DrawMap() {
                 stage.removeAllChildren();
@@ -518,21 +525,17 @@
                 }
 
                 stage.addEventListener('mousedown', function(event) {
-                        console.log("down");
                         cellPress(event.stageX, event.stageY);
                     }, false);
                 
                 stage.addEventListener('pressmove', function(event) {
-                        console.log("move");
                         if(event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove") {
-                            console.log("pressed");
                             cellPress(event.stageX, event.stageY);
                         } 
                         if(lockScroll == true) event.nativeEvent.preventDefault();
                     }, false);
 
                 stage.addEventListener('pressup', function(event) {
-                        console.log("release lock");
                         lockScroll = false;
                     }, false);
 
@@ -554,16 +557,6 @@
                 stage.update();
             }
 
-            function exportJpeg() {
-                let downloadLink = document.createElement('a');
-                downloadLink.setAttribute('download', 'WarMap.png');
-                let canvas = document.getElementById('canvas');
-                let dataURL = canvas.toDataURL('image/png');
-                let url = dataURL.replace(/^data:image\/png/,'data:application/octet-stream');
-                downloadLink.setAttribute('href', url);
-                downloadLink.click();
-            }
-
             function cellPress(stageX, stageY) {
                 var m = Math.floor(stageX / MAPW);
                 var x = (stageX - m * MAPW) / SCALE;
@@ -573,7 +566,6 @@
                 var cell = mapsLayout[m][row][column];
                 if (!cell) return;
                 if (cell.drawable) {
-                    console.log("acquire lock");
                     lockScroll = true;
                     if (cell.symbol) stage.removeChild(cell.symbol);
                     if (cell.background) stage.removeChild(cell.background);
@@ -592,7 +584,6 @@
 
                         cell.background.addEventListener('pressmove', function(event) {
                             if(event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove") {
-                                console.log("pressed");
                                 cellPress(event.stageX, event.stageY);
                             } 
                             if(lockScroll == true) event.nativeEvent.preventDefault();
@@ -613,7 +604,6 @@
                         cell.symbol.y = row * 208 * SCALE + 25 * SCALE;
                         cell.symbol.addEventListener('pressmove', function(event) {
                             if(event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove") {
-                                console.log("pressed");
                                 cellPress(event.stageX, event.stageY);
                             } 
                             if(lockScroll == true) event.nativeEvent.preventDefault();
@@ -622,6 +612,58 @@
                     }
                     stage.update();
                 }
+            }
+
+            function hasDrawings() {
+                return mapsLayout.find(
+                    (mapLayout) => {
+                        return mapLayout.find(
+                            (row) => {
+                                return row.find(
+                                    (el) => {
+                                        return el.symbol || el.background;
+                                    }
+                                )
+                            }
+                        )
+                    }
+                ) != undefined;
+            }
+
+            function exportJpeg() {
+                let downloadLink = document.createElement('a');
+                downloadLink.setAttribute('download', 'WarMap.png');
+                let canvas = document.getElementById('canvas');
+                let dataURL = canvas.toDataURL('image/png');
+                let url = dataURL.replace(/^data:image\/png/,'data:application/octet-stream');
+                downloadLink.setAttribute('href', url);
+                downloadLink.click();
+            }
+
+            function clearCanvas() {
+                mapsLayout.map(
+                    (mapLayout) => {
+                        mapLayout.map(
+                            (row) => {
+                                row.map(
+                                    (el) => {
+                                        if (el.symbol != null) {
+                                            stage.removeChild(el.symbol);
+                                            el.symbol = null;
+                                            el.symbolSer = null;
+                                        }
+                                        if (el.background) {
+                                            stage.removeChild(el.background);
+                                            el.background = null;
+                                            el.backgroundSer = null;
+                                        }
+                                    }
+                                )
+                            }
+                        )
+                    }
+                );
+                stage.update();
             }
 
         </script>
