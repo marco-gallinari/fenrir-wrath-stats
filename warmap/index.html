@@ -19,7 +19,6 @@
     <body style="margin:0;">
         <canvas style="margin:0;position:absolute;top:0;" id="toolbar" width="2500" height="32"></canvas>
         <canvas style="margin:0;position:absolute;top:32px;" id="canvas" width="500" height="800"></canvas>
-        <div style="margin:0;position:absolute;top:1200px;" id="navigator"></div>
         <script>
             var H, W, SCALE, MAPW;
             var clanMap, neighbourMap;
@@ -64,7 +63,6 @@
             }
 
             function resize() {
-                $('#navigator').text(navigator.userAgent);
                 if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
                     H = (window.innerHeight - 50);
                 }else{
