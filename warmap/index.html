@@ -557,6 +557,7 @@
                                                             if (cell.backgroundSer == "green") cell.background = gBG.clone();
                                                             cell.background.alpha = 0.6;
                                                             cell.background.scale = Math.floor((208 * SCALE) / TBARH  * 100)/100;
+                                                            cell.background.cache(0, 0, cell.background.getBounds().width, cell.background.getBounds().height);
                                                             cell.background.x = m * MAPW + column * 208 * SCALE;
                                                             cell.background.y = row * 208 * SCALE;
 
@@ -574,6 +575,7 @@
                                                             if (cell.symbolSer == "red") cell.symbol = new createjs.Bitmap(reds.cacheCanvas);
                                                             if (cell.symbolSer == "green") cell.symbol = new createjs.Bitmap(greens.cacheCanvas);
                                                             cell.symbol.scale = Math.floor((150 * window.devicePixelRatio * SCALE) / TBARH  * 100)/100;
+                                                            cell.symbol.cache(0, 0, cell.symbol.getBounds().width, cell.symbol.getBounds().height);
                                                             cell.symbol.x = m * MAPW + column * 208 * SCALE + 25 * SCALE;
                                                             cell.symbol.y = row * 208 * SCALE + 25 * SCALE;
                                                             cell.symbol.addEventListener('pressmove', function(event) {
@@ -743,12 +745,14 @@
                 var sideMaps = Math.floor(settings.maps / 2);
 
                 clanMap.scale = SCALE;
+                clanMap.cache(0, 0, clanMap.getBounds().width, clanMap.getBounds().height);
                 clanMap.x = sideMaps * MAPW;
 
                 for (var i = 0; i < sideMaps; i++) {
                     var map1 = neighbourMap.clone();
                     map1.scale = SCALE;
                     map1.x = i * MAPW;
+                    map1.cache(0, 0, map1.getBounds().width, map1.getBounds().height);
                     stage.addChild(map1);
                 }
 
@@ -758,6 +762,7 @@
                     var map2 = neighbourMap.clone();
                     map2.scale = SCALE;
                     map2.x = clanMap.x + ((i + 1) * MAPW);
+                    map2.cache(0, 0, map2.getBounds().width, map2.getBounds().height);
                     stage.addChild(map2);
                 }
 
@@ -816,6 +821,7 @@
                         cell.backgroundSer = settings.selectedBackgroundSer;
                         cell.background.alpha = 0.6;
                         cell.background.scale = Math.floor((208 * SCALE) / TBARH  * 100)/100;
+                        cell.background.cache(0, 0, cell.background.getBounds().width, cell.background.getBounds().height);
                         cell.background.x = m * MAPW + column * 208 * SCALE;
                         cell.background.y = row * 208 * SCALE;
 
@@ -837,6 +843,7 @@
                         cell.symbol = new createjs.Bitmap(settings.selectedShield.cacheCanvas);
                         cell.symbolSer = settings.selectedShieldSer;
                         cell.symbol.scale = Math.floor((150 * window.devicePixelRatio * SCALE) / TBARH  * 100)/100;
+                        cell.symbol.cache(0, 0, cell.symbol.getBounds().width, cell.symbol.getBounds().height);
                         cell.symbol.x = m * MAPW + column * 208 * SCALE + 25 * SCALE;
                         cell.symbol.y = row * 208 * SCALE + 25 * SCALE;
                         cell.symbol.addEventListener('pressmove', function(event) {
