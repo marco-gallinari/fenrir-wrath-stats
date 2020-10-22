@@ -243,7 +243,7 @@
                                 DrawMap();
                             }
                         });
-                        pos += label1.getMeasuredWidth() * label1.scale * window.devicePixelRatio;
+                        pos += label1.getMeasuredWidth() * label1.scale;
                         sLabelBG.graphics.beginFill("rgba(180,180,180,0.5)").drawRect(0, 0, label1.getMeasuredWidth(), label1.getMeasuredHeight());
                         sLabelBG.scale = label1.scale;
                         toolbar.addChild(sLabelBG);
@@ -264,7 +264,7 @@
                         });
                         label2.on("mouseover", handleInteraction);
                         label2.on("mouseout", handleInteraction);
-                        pos += label2.getMeasuredWidth() * label1.scale * window.devicePixelRatio;
+                        pos += label2.getMeasuredWidth() * label1.scale;
                         toolbar.addChild(label2);
 
                         var label3 = new createjs.Text(" 7 ", "100px Arial", "#555");
@@ -282,7 +282,7 @@
                         });
                         label3.on("mouseover", handleInteraction);
                         label3.on("mouseout", handleInteraction);
-                        pos += label3.getMeasuredWidth() * label1.scale * window.devicePixelRatio;
+                        pos += label3.getMeasuredWidth() * label1.scale;
                         toolbar.addChild(label3);
 
                         var mapc = new createjs.Shape();
