@@ -93,22 +93,37 @@
             }
         </script>
         
-        <div style="display: flex;flex-direction: column;">
-            <div style="flex:0 0 100%; display: flex;flex-flow: row-reverse;">
-                <a id="sign-in-or-out-button" class="text"
-                        style="margin:10px; font-size:20px; color:#2D4979; cursor:pointer; text-decoration:underline;">Sign In/Authorize</a>
-                <a id="revoke-access-button" class="text"
-                        style="display:none; margin:10px; font-size:20px; color:#761F1D; cursor:pointer; text-decoration:underline;">Revoke access</a>
-                <div id="auth-status" class="text" style="display:inline; margin:10px; font-size:20px"></div>
-                <select id="savedMaps" style="flex:1">
-                    <option>No maps available.</option>
-                </select>
-            </div>
-        </div>
 
-        <div style="position: relative;">
-            <canvas style="margin:0;position:absolute;top:0;" id="toolbar" width="2500" height="32"></canvas>
-            <canvas style="margin:0;position:absolute;top:32px;" id="canvas" width="500" height="800"></canvas>
+        <table id="headers" style="width:100%">
+            <tr>
+                <td rowspan="2">
+                    <select id="savedMaps" style="height:50px">
+                        <option>No maps available.</option>
+                    </select>
+                </td>
+                <td><div id="auth-status" class="text" style="float:right;display:inline; margin:10px; font-size:12px"></div></td>
+            </tr>
+            <tr>
+                <td>
+                    <a id="sign-in-or-out-button" class="text"
+                        style="float:right;margin:10px; font-size:18px; color:#2D4979; cursor:pointer; text-decoration:underline;">
+                        Sign In/Authorize
+                    </a>
+                    <a id="revoke-access-button" class="text"
+                        style="float:right;display:none; margin:10px; font-size:18px; color:#761F1D; cursor:pointer; text-decoration:underline;">
+                        Revoke access
+                    </a>
+                </td>
+            </tr>
+          </table>
+
+        <div style="position: fixed;height: 100%;left: 0;right: 0;">
+            <div id="toolbarCont" style="position:absolute;left:0;right:0;overflow: auto;">
+                <canvas style="margin:0" id="toolbar" width="1200" height="32"></canvas>
+            </div>
+            <div id="canvasCont" style="position:absolute;left:0;right:0;bottom:0;overflow: auto;">
+                <canvas style="margin:0;" id="canvas" width="500" height="800"></canvas>
+            </div>
         </div>
 
         <script>
@@ -134,7 +149,9 @@
 
             var mapsLayout = [];
 
-            var TBARH = 45 * window.devicePixelRatio;
+            var pixelRatio = (window.devicePixelRatio > 1 ? window.devicePixelRatio / 2 : 1)
+
+            var TBARH = 45 * pixelRatio;
 
             var lockScroll = false;
 
@@ -582,7 +599,7 @@
                                                             if (cell.symbolSer == "blue") cell.symbol = new createjs.Bitmap(blues.cacheCanvas);
                                                             if (cell.symbolSer == "red") cell.symbol = new createjs.Bitmap(reds.cacheCanvas);
                                                             if (cell.symbolSer == "green") cell.symbol = new createjs.Bitmap(greens.cacheCanvas);
-                                                            cell.symbol.scale = Math.floor(((SQUARE * 0.8) * window.devicePixelRatio * SCALE) / TBARH  * 100)/100;
+                                                            cell.symbol.scale = Math.floor(((SQUARE * 0.8) * pixelRatio * SCALE) / TBARH  * 100)/100;
                                                             cell.symbol.cache(0, 0, cell.symbol.getBounds().width, cell.symbol.getBounds().height);
                                                             cell.symbol.x = m * MAPW + column * SQUARE * SCALE + (SQUARE * 0.05) * SCALE;
                                                             cell.symbol.y = row * SQUARE * SCALE + (SQUARE * 0.05) * SCALE;
@@ -686,14 +703,16 @@
 
             function resize() {
                 if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
-                    H = (window.innerHeight - 50);
+                    H = (window.innerHeight) - TBARH - $('#headers').height();
+                    $(".text").css("font-size", 14 * pixelRatio + "px");   
+                    $("#savedMaps").css("height", 50 * pixelRatio + "px");   
                 }else{
-                    H = ($(window).height() - 50);
+                    H = ($(window).height()) - TBARH - $('#headers').height();
                 }
                 $("#canvas").height(H + "px").attr("height", H);
                 $("#toolbar").height(TBARH + "px").attr("height", TBARH);
-                $("#canvas").css("top", TBARH + "px");
-                $(".text").css("font-size", 20 * window.devicePixelRatio + "px")
+                //$("#toolbar").width(15 * TBARH + "px").width("height", 15 * TBARH);
+                $("#canvasCont").css("top", TBARH + "px");
             }
 
             function initializeMapSlots() {
@@ -852,7 +871,7 @@
                     else {
                         cell.symbol = new createjs.Bitmap(settings.selectedShield.cacheCanvas);
                         cell.symbolSer = settings.selectedShieldSer;
-                        cell.symbol.scale = Math.floor(((SQUARE * 0.80) * window.devicePixelRatio * SCALE) / TBARH  * 100)/100;
+                        cell.symbol.scale = Math.floor(((SQUARE * 0.80) * pixelRatio * SCALE) / TBARH  * 100)/100;
                         cell.symbol.cache(0, 0, cell.symbol.getBounds().width, cell.symbol.getBounds().height);
                         cell.symbol.x = m * MAPW + column * SQUARE * SCALE + (SQUARE * 0.05) * SCALE;
                         cell.symbol.y = row * SQUARE * SCALE + (SQUARE * 0.05) * SCALE;
@@ -886,10 +905,10 @@
 
             function exportJpeg() {
                 let downloadLink = document.createElement('a');
-                downloadLink.setAttribute('download', 'WarMap.png');
+                downloadLink.setAttribute('download', 'WarMap.jpeg');
                 let canvas = document.getElementById('canvas');
-                let dataURL = canvas.toDataURL('image/png');
-                let url = dataURL.replace(/^data:image\/png/,'data:application/octet-stream');
+                let dataURL = canvas.toDataURL('image/jpeg', 0.5);
+                let url = dataURL.replace(/^data:image\/jpeg/,'data:application/octet-stream');
                 downloadLink.setAttribute('href', url);
                 downloadLink.click();
             }
