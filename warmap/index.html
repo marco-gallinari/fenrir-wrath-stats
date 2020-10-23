@@ -582,7 +582,7 @@
                                                             if (cell.symbolSer == "blue") cell.symbol = new createjs.Bitmap(blues.cacheCanvas);
                                                             if (cell.symbolSer == "red") cell.symbol = new createjs.Bitmap(reds.cacheCanvas);
                                                             if (cell.symbolSer == "green") cell.symbol = new createjs.Bitmap(greens.cacheCanvas);
-                                                            cell.symbol.scale = Math.floor(((SQUARE * 0.75) * window.devicePixelRatio * SCALE) / TBARH  * 100)/100;
+                                                            cell.symbol.scale = Math.floor(((SQUARE * 0.75) * SCALE) / TBARH  * 100)/100;
                                                             cell.symbol.cache(0, 0, cell.symbol.getBounds().width, cell.symbol.getBounds().height);
                                                             cell.symbol.x = m * MAPW + column * SQUARE * SCALE + (SQUARE * 0.12) * SCALE;
                                                             cell.symbol.y = row * SQUARE * SCALE + (SQUARE * 0.12) * SCALE;
@@ -853,7 +853,7 @@
                     else {
                         cell.symbol = new createjs.Bitmap(settings.selectedShield.cacheCanvas);
                         cell.symbolSer = settings.selectedShieldSer;
-                        cell.symbol.scale = Math.floor(((SQUARE * 0.75) * window.devicePixelRatio * SCALE) / TBARH  * 100)/100;
+                        cell.symbol.scale = Math.floor(((SQUARE * 0.75) * SCALE) / TBARH  * 100)/100;
                         cell.symbol.cache(0, 0, cell.symbol.getBounds().width, cell.symbol.getBounds().height);
                         cell.symbol.x = m * MAPW + column * SQUARE * SCALE + (SQUARE * 0.12) * SCALE;
                         cell.symbol.y = row * SQUARE * SCALE + (SQUARE * 0.12) * SCALE;
