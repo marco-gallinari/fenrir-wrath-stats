@@ -248,7 +248,7 @@
                         var emptyShield = new createjs.Bitmap(divieto);
                         var emptyhit = new createjs.Shape();
                         emptyhit.graphics.beginFill("#000").drawRect(0, 0, emptyShield.getBounds().width, emptyShield.getBounds().height).endFill();
-                        emptyShield.scale = Math.floor((TBARH - 10 * window.devicePixelRatio) / (emptyShield.getBounds().height * window.devicePixelRatio) * 100)/100;
+                        emptyShield.scale = Math.floor((TBARH - 10) / (emptyShield.getBounds().height) * 100)/100;
                         emptyShield.x = pos + (TBARH / 2 - (emptyShield.getBounds().width * emptyShield.scale / 2));
                         emptyShield.y = (TBARH / 2 - (emptyShield.getBounds().height * emptyShield.scale / 2));
                         emptyShield.hitArea = emptyhit;
@@ -263,7 +263,7 @@
                         
                         var blueShield = new createjs.Bitmap(scudo);
                         blueShield.name = "blues";
-                        blueShield.scale = Math.floor((TBARH - 10 * window.devicePixelRatio) / (blueShield.getBounds().height * window.devicePixelRatio) * 100)/100;
+                        blueShield.scale = Math.floor((TBARH - 10) / (blueShield.getBounds().height) * 100)/100;
                         var widthFactor = TBARH / 2 - (blueShield.getBounds().width * blueShield.scale / 2);
                         var heightFactor = TBARH / 2 - (blueShield.getBounds().height * blueShield.scale / 2);
                         blueShield.x = startShields + TBARH + widthFactor;
@@ -332,7 +332,7 @@
 
                         var emptyBackground = new createjs.Bitmap(divieto);
                         emptyBackground.name = "eBG";
-                        emptyBackground.scale = Math.floor((TBARH - 10 * window.devicePixelRatio) / (emptyBackground.getBounds().height * window.devicePixelRatio) * 100)/100;
+                        emptyBackground.scale = Math.floor((TBARH - 10) / (emptyBackground.getBounds().height) * 100)/100;
                         emptyBackground.x = startBackground + (TBARH / 2 - (emptyBackground.getBounds().width * emptyBackground.scale / 2));
                         emptyBackground.y = (TBARH / 2 - (emptyBackground.getBounds().height * emptyBackground.scale / 2));
                         emptyBackground.hitArea = emptyhit;
