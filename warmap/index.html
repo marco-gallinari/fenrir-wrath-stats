@@ -112,7 +112,7 @@
         </div>
 
         <script>
-            var H, W, SCALE, MAPW;
+            var H, W, SCALE, MAPW, SQUARE;
             var clanMap, neighbourMap;
             var stage, toolbar;
 
@@ -233,7 +233,6 @@
                         var mapc = new createjs.Shape();
                         mapc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, pos, TBARH);
                         toolbar.addChild(mapc);
-
                         // END MAP SIZE
 
                         // SHIELDS
@@ -520,8 +519,15 @@
                         DrawMap();
                     });
 
-                    queue.loadFile({src:"mappaCLAN.jpg", id:"clan"});
-                    queue.loadFile({src:"mappaVICINI.jpg", id:"vicini"});
+                    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
+                        queue.loadFile({src:"mappaCLAN_mobile.jpg", id:"clan"});
+                        queue.loadFile({src:"mappaVICINI_mobile.jpg", id:"vicini"});
+                        SQUARE = 52;
+                    }else{
+                        queue.loadFile({src:"mappaCLAN.jpg", id:"clan"});
+                        queue.loadFile({src:"mappaVICINI.jpg", id:"vicini"});
+                        SQUARE = 208;
+                    }
                     queue.loadFile({src:"shield.png", id:"scudo"});
                     queue.loadFile({src:"forbidden.png", id:"divieto"});
                     queue.loadFile({src:"download.png", id:"download"});
@@ -558,10 +564,10 @@
                                                             if (cell.backgroundSer == "red") cell.background = rBG.clone();
                                                             if (cell.backgroundSer == "green") cell.background = gBG.clone();
                                                             cell.background.alpha = 0.6;
-                                                            cell.background.scale = Math.floor((208 * SCALE) / TBARH  * 100)/100;
+                                                            cell.background.scale = Math.floor((SQUARE * SCALE) / TBARH  * 100)/100;
                                                             cell.background.cache(0, 0, TBARH, TBARH);
-                                                            cell.background.x = m * MAPW + column * 208 * SCALE;
-                                                            cell.background.y = row * 208 * SCALE;
+                                                            cell.background.x = m * MAPW + column * SQUARE * SCALE;
+                                                            cell.background.y = row * SQUARE * SCALE;
 
                                                             cell.background.addEventListener('pressmove', function(event) {
                                                                 if(event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove") {
@@ -576,10 +582,10 @@
                                                             if (cell.symbolSer == "blue") cell.symbol = new createjs.Bitmap(blues.cacheCanvas);
                                                             if (cell.symbolSer == "red") cell.symbol = new createjs.Bitmap(reds.cacheCanvas);
                                                             if (cell.symbolSer == "green") cell.symbol = new createjs.Bitmap(greens.cacheCanvas);
-                                                            cell.symbol.scale = Math.floor((150 * window.devicePixelRatio * SCALE) / TBARH  * 100)/100;
+                                                            cell.symbol.scale = Math.floor(((SQUARE * 0.75) * window.devicePixelRatio * SCALE) / TBARH  * 100)/100;
                                                             cell.symbol.cache(0, 0, cell.symbol.getBounds().width, cell.symbol.getBounds().height);
-                                                            cell.symbol.x = m * MAPW + column * 208 * SCALE + 25 * SCALE;
-                                                            cell.symbol.y = row * 208 * SCALE + 25 * SCALE;
+                                                            cell.symbol.x = m * MAPW + column * SQUARE * SCALE + (SQUARE * 0.12) * SCALE;
+                                                            cell.symbol.y = row * SQUARE * SCALE + (SQUARE * 0.12) * SCALE;
                                                             cell.symbol.addEventListener('pressmove', function(event) {
                                                                 if(event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove") {
                                                                     cellPress(event.stageX, event.stageY);
@@ -808,8 +814,8 @@
                 var m = Math.floor(stageX / MAPW);
                 var x = (stageX - m * MAPW) / SCALE;
                 var y = stageY / SCALE;
-                var row = Math.floor(y / 208);
-                var column = Math.floor(x / 208);
+                var row = Math.floor(y / SQUARE);
+                var column = Math.floor(x / SQUARE);
                 var cell = mapsLayout[m][row][column];
                 if (!cell) return;
                 if (cell.drawable) {
@@ -825,10 +831,10 @@
                         cell.background = settings.selectedBackground.clone();
                         cell.backgroundSer = settings.selectedBackgroundSer;
                         cell.background.alpha = 0.6;
-                        cell.background.scale = Math.floor((208 * SCALE) / TBARH  * 100)/100;
+                        cell.background.scale = Math.floor((SQUARE * SCALE) / TBARH  * 100)/100;
                         cell.background.cache(0, 0, TBARH, TBARH);
-                        cell.background.x = m * MAPW + column * 208 * SCALE;
-                        cell.background.y = row * 208 * SCALE;
+                        cell.background.x = m * MAPW + column * SQUARE * SCALE;
+                        cell.background.y = row * SQUARE * SCALE;
 
                         cell.background.addEventListener('pressmove', function(event) {
                             if(event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove") {
@@ -847,10 +853,10 @@
                     else {
                         cell.symbol = new createjs.Bitmap(settings.selectedShield.cacheCanvas);
                         cell.symbolSer = settings.selectedShieldSer;
-                        cell.symbol.scale = Math.floor((150 * window.devicePixelRatio * SCALE) / TBARH  * 100)/100;
+                        cell.symbol.scale = Math.floor(((SQUARE * 0.75) * window.devicePixelRatio * SCALE) / TBARH  * 100)/100;
                         cell.symbol.cache(0, 0, cell.symbol.getBounds().width, cell.symbol.getBounds().height);
-                        cell.symbol.x = m * MAPW + column * 208 * SCALE + 25 * SCALE;
-                        cell.symbol.y = row * 208 * SCALE + 25 * SCALE;
+                        cell.symbol.x = m * MAPW + column * SQUARE * SCALE + (SQUARE * 0.12) * SCALE;
+                        cell.symbol.y = row * SQUARE * SCALE + (SQUARE * 0.12) * SCALE;
                         cell.symbol.addEventListener('pressmove', function(event) {
                             if(event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove") {
                                 cellPress(event.stageX, event.stageY);
