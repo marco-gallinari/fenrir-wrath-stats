@@ -557,7 +557,7 @@
                                                             if (cell.backgroundSer == "green") cell.background = gBG.clone();
                                                             cell.background.alpha = 0.6;
                                                             cell.background.scale = Math.floor((208 * SCALE) / TBARH  * 100)/100;
-                                                            cell.background.cache(0, 0, cell.background.getBounds().width, cell.background.getBounds().height);
+                                                            cell.background.cache(0, 0, TBARH, TBARH);
                                                             cell.background.x = m * MAPW + column * 208 * SCALE;
                                                             cell.background.y = row * 208 * SCALE;
 
@@ -821,7 +821,7 @@
                         cell.backgroundSer = settings.selectedBackgroundSer;
                         cell.background.alpha = 0.6;
                         cell.background.scale = Math.floor((208 * SCALE) / TBARH  * 100)/100;
-                        cell.background.cache(0, 0, cell.background.getBounds().width, cell.background.getBounds().height);
+                        cell.background.cache(0, 0, TBARH, TBARH);
                         cell.background.x = m * MAPW + column * 208 * SCALE;
                         cell.background.y = row * 208 * SCALE;
 
@@ -918,6 +918,15 @@
                     uploadType: 'media'
                     },
                     body: JSON.stringify(appData)
+                }).then(function(data) {
+                    loadSavedMaps();
+                });
+            };
+
+            var deleteMapData = function (fileId) {
+                return gapi.client.request({
+                    path: '/drive/v3/files/' + fileId,
+                    method: 'DELETE'
                 }).then(function(data) {
                     loadSavedMaps();
                 });
