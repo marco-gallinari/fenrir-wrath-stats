@@ -582,10 +582,10 @@
                                                             if (cell.symbolSer == "blue") cell.symbol = new createjs.Bitmap(blues.cacheCanvas);
                                                             if (cell.symbolSer == "red") cell.symbol = new createjs.Bitmap(reds.cacheCanvas);
                                                             if (cell.symbolSer == "green") cell.symbol = new createjs.Bitmap(greens.cacheCanvas);
-                                                            cell.symbol.scale = Math.floor(((SQUARE * 0.80) * window.devicePixelRatio * SCALE) / TBARH  * 100)/100;
+                                                            cell.symbol.scale = Math.floor(((SQUARE * 0.8) * window.devicePixelRatio * SCALE) / TBARH  * 100)/100;
                                                             cell.symbol.cache(0, 0, cell.symbol.getBounds().width, cell.symbol.getBounds().height);
-                                                            cell.symbol.x = m * MAPW + column * SQUARE * SCALE + (SQUARE * 0.1) * SCALE;
-                                                            cell.symbol.y = row * SQUARE * SCALE + (SQUARE * 0.1) * SCALE;
+                                                            cell.symbol.x = m * MAPW + column * SQUARE * SCALE + (SQUARE * 0.05) * SCALE;
+                                                            cell.symbol.y = row * SQUARE * SCALE + (SQUARE * 0.05) * SCALE;
                                                             cell.symbol.addEventListener('pressmove', function(event) {
                                                                 if(event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove") {
                                                                     cellPress(event.stageX, event.stageY);
@@ -603,8 +603,7 @@
                     }
                 });
             });
-
-
+            
             function applyToolbarSettings() {
                 var label1 = toolbar.getChildByName("3maps");
                 var label2 = toolbar.getChildByName("5maps");
@@ -855,8 +854,8 @@
                         cell.symbolSer = settings.selectedShieldSer;
                         cell.symbol.scale = Math.floor(((SQUARE * 0.80) * window.devicePixelRatio * SCALE) / TBARH  * 100)/100;
                         cell.symbol.cache(0, 0, cell.symbol.getBounds().width, cell.symbol.getBounds().height);
-                        cell.symbol.x = m * MAPW + column * SQUARE * SCALE + (SQUARE * 0.10) * SCALE;
-                        cell.symbol.y = row * SQUARE * SCALE + (SQUARE * 0.10) * SCALE;
+                        cell.symbol.x = m * MAPW + column * SQUARE * SCALE + (SQUARE * 0.05) * SCALE;
+                        cell.symbol.y = row * SQUARE * SCALE + (SQUARE * 0.05) * SCALE;
                         cell.symbol.addEventListener('pressmove', function(event) {
                             if(event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove") {
                                 cellPress(event.stageX, event.stageY);
