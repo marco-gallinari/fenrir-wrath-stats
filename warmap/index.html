@@ -155,6 +155,11 @@
 
             var lockScroll = false;
 
+            var curYPos = 0,
+            curXPos = 0,
+            curDown = false,
+            scrolling = false;
+
             $(document).ready(function(){
 
                 resize();
@@ -169,7 +174,7 @@
                         // INIT MAP CANVAS
                         stage = new createjs.Stage("canvas");
 
-                        createjs.Touch.enable( stage, true, true );
+                        createjs.Touch.enable( stage, true, false );
                         stage.preventSelection = false;
                         stage.enableMouseOver(100);
 
@@ -796,18 +801,49 @@
                 }
 
                 stage.addEventListener('mousedown', function(event) {
-                        cellPress(event.stageX, event.stageY);
+                        if (!scrolling && !cellPress(event.stageX, event.stageY)) {
+                            curDown = true;
+                            if (event.nativeEvent.type = "touchstart") {
+                                curXPos = event.nativeEvent.touches[0].pageX;
+                                curYPos = event.nativeEvent.touches[0].pageY;
+                            }
+                            else {
+                                curYPos = event.nativeEvent.pageY; 
+                                curXPos = event.nativeEvent.pageX;
+                            }
+                        }
                     }, false);
                 
                 stage.addEventListener('pressmove', function(event) {
-                        if(event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove") {
+                        if(!scrolling && (event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove")) {
                             cellPress(event.stageX, event.stageY);
                         } 
                         if(lockScroll == true) event.nativeEvent.preventDefault();
+                        if(curDown == true){
+                            scrolling = true;
+                            var x = event.nativeEvent.pageX;
+                            var y = event.nativeEvent.pageY;
+                            if (event.nativeEvent.type = "touchstart") {
+                                x = event.nativeEvent.touches[0].pageX;
+                                y = event.nativeEvent.touches[0].pageY;
+                            }
+                            $('#canvasCont').scrollLeft($('#canvasCont').scrollLeft() + (curXPos - x))
+                                            .scrollTop($('#canvasCont').scrollTop() + (curYPos - y));
+                            if (event.nativeEvent.type = "touchstart") {
+                                curXPos = event.nativeEvent.touches[0].pageX;
+                                curYPos = event.nativeEvent.touches[0].pageY;
+                            }
+                            else {
+                                curYPos = event.nativeEvent.pageY; 
+                                curXPos = event.nativeEvent.pageX;
+                            }
+                        }
                     }, false);
 
                 stage.addEventListener('pressup', function(event) {
                         lockScroll = false;
+                        curDown = false;
+                        scrolling = false;
                     }, false);
 
                 for (var m = 0; m < mapsLayout.length; m++) {
@@ -835,7 +871,7 @@
                 var row = Math.floor(y / SQUARE);
                 var column = Math.floor(x / SQUARE);
                 var cell = mapsLayout[m][row][column];
-                if (!cell) return;
+                if (!cell) return false;
                 if (cell.drawable) {
                     lockScroll = true;
                     if (cell.symbol) stage.removeChild(cell.symbol);
@@ -884,7 +920,9 @@
                         stage.addChild(cell.symbol);
                     }
                     stage.update();
+                    return true;
                 }
+                return false;
             }
 
             function hasDrawings() {
