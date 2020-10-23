@@ -247,12 +247,12 @@
                         toolbar.addChild(iconRect);
 
                         var emptyShield = new createjs.Bitmap(divieto);
+                        var emptyhit = new createjs.Shape();
+                        emptyhit.graphics.beginFill("#000").drawRect(0, 0, emptyShield.getBounds().width, emptyShield.getBounds().height).endFill();
                         emptyShield.scale = Math.floor((TBARH - 10 * window.devicePixelRatio) / (emptyShield.getBounds().height * window.devicePixelRatio) * 100)/100;
                         emptyShield.x = pos + (TBARH / 2 - (emptyShield.getBounds().width * emptyShield.scale / 2));
                         emptyShield.y = (TBARH / 2 - (emptyShield.getBounds().height * emptyShield.scale / 2));
-                        var hit = new createjs.Shape();
-                        hit.graphics.beginFill("#000").drawRect(0, 0, TBARH, TBARH).endFill();
-                        emptyShield.hitArea = hit;
+                        emptyShield.hitArea = emptyhit;
                         emptyShield.addEventListener('mousedown', function(event) {
                             event.nativeEvent.preventDefault();
                             iconRect.x = startShields;
@@ -273,6 +273,8 @@
                                 new createjs.ColorFilter(0,0,0,1, 38,75,150,0)
                         ];
                         blueShield.cache(0, 0, blueShield.getBounds().width, blueShield.getBounds().height);
+                        var hit = new createjs.Shape();
+                        hit.graphics.beginFill("#000").drawRect(0, 0, TBARH, TBARH).endFill();
                         blueShield.hitArea = hit;
                         blueShield.addEventListener('pressup', function(event) {
                             event.nativeEvent.preventDefault();
@@ -334,7 +336,7 @@
                         emptyBackground.scale = Math.floor((TBARH - 10 * window.devicePixelRatio) / (emptyBackground.getBounds().height * window.devicePixelRatio) * 100)/100;
                         emptyBackground.x = startBackground + (TBARH / 2 - (emptyBackground.getBounds().width * emptyBackground.scale / 2));
                         emptyBackground.y = (TBARH / 2 - (emptyBackground.getBounds().height * emptyBackground.scale / 2));
-                        emptyBackground.hitArea = hit;
+                        emptyBackground.hitArea = emptyhit;
                         emptyBackground.addEventListener('mousedown', function(event) {
                             event.nativeEvent.preventDefault();
                             backRect.x = startBackground;
@@ -733,6 +735,8 @@
                 SCALE = Math.floor(H / clanMap.getBounds().height * 100)/100;
                 MAPW = clanMap.getBounds().width * SCALE;
 
+                var mapBounds = clanMap.getBounds();
+
                 W = MAPW * settings.maps;
                 $("#canvas").width(W + "px").attr("width", W);
 
@@ -745,24 +749,25 @@
                 var sideMaps = Math.floor(settings.maps / 2);
 
                 clanMap.scale = SCALE;
-                clanMap.cache(0, 0, clanMap.getBounds().width, clanMap.getBounds().height);
                 clanMap.x = sideMaps * MAPW;
 
                 for (var i = 0; i < sideMaps; i++) {
                     var map1 = neighbourMap.clone();
                     map1.scale = SCALE;
                     map1.x = i * MAPW;
-                    map1.cache(0, 0, map1.getBounds().width, map1.getBounds().height);
+                    map1.cache(0, 0, mapBounds.width, mapBounds.height);
                     stage.addChild(map1);
                 }
 
-                stage.addChild(clanMap);
+                var centerMap = clanMap.clone();
+                centerMap.cache(0, 0, mapBounds.width, mapBounds.height);
+                stage.addChild(centerMap);
                 
                 for (var i = 0; i < sideMaps; i++) {
                     var map2 = neighbourMap.clone();
                     map2.scale = SCALE;
                     map2.x = clanMap.x + ((i + 1) * MAPW);
-                    map2.cache(0, 0, map2.getBounds().width, map2.getBounds().height);
+                    map2.cache(0, 0, mapBounds.width, mapBounds.height);
                     stage.addChild(map2);
                 }
 
