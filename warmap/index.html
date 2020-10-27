@@ -18,6 +18,13 @@
             select, option {
                 font-size: 20px;
             }
+            .avatar {
+                vertical-align: middle;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                border: 1px solid lightgray;
+            }
         </style>
     </head>
     <body style="margin:0;">
@@ -46,10 +53,10 @@
                     var user = GoogleAuth.currentUser.get();
                     setSigninStatus();
                 
-                    $('#sign-in-or-out-button').click(function() {
+                    $('#avatar').click(function() {
                         handleAuthClick();
                     });
-                    $('#revoke-access-button').click(function() {
+                    $('#revoke').click(function() {
                         revokeAccess();
                     });
                 });
@@ -70,18 +77,22 @@
                     GoogleAuth.disconnect();
                 }
             }
-            
+        
             function setSigninStatus() {
                 var user = GoogleAuth.currentUser.get();
                 var isAuthorized = user.hasGrantedScopes(SCOPE);
                 if (isAuthorized) {
-                    $('#sign-in-or-out-button').html('Change user');
-                    $('#revoke-access-button').css('display', 'inline-block');
-                    $('#auth-status').html('Welcome ' + user.getBasicProfile().getName() + '.');
+                    // $('#sign-in-or-out-button').html('Change user');
+                    $('#revoke').css('display', 'inline-block');
+                    $('#deleteMap').css('display', 'inline-block');
+                    $('#exportMap').css('display', 'inline-block');
+                    $('#avatar').attr("src", user.getBasicProfile().getImageUrl());
                     loadSavedMaps();
                 } else {
                     $('#sign-in-or-out-button').html('Sign In/Authorize');
-                    $('#revoke-access-button').css('display', 'none');
+                    $('#revoke').css('display', 'none');
+                    $('#deleteMap').css('display', 'none');
+                    $('#exportMap').css('display', 'none');
                     $('#auth-status').html('You have not authorized this app or you are ' +
                         'signed out.');
                     $("#savedMaps").find('option').remove().end().append('<option>No maps available.</option>');
@@ -96,30 +107,31 @@
 
         <table id="headers" style="width:100%">
             <tr>
-                <td rowspan="2">
-                    <select id="savedMaps" style="height:50px">
+                <td>
+                    <select id="savedMaps" style="height:50px;width:100%">
                         <option>No maps available.</option>
                     </select>
                 </td>
-                <td><div id="auth-status" class="text" style="float:right;display:inline; margin:10px; font-size:12px"></div></td>
-            </tr>
-            <tr>
+                <td style="width:1%;white-space:nowrap;">
+                    <button id="deleteMap"  style="display: none;">
+                        <img src="delete.png">
+                    </button>
+                </td>
+                <td style="width:1%;white-space:nowrap;">
+                    <button id="exportMap"  style="display: none;" >
+                        <img src="export.png">
+                    </button>
+                </td>
                 <td>
-                    <a id="sign-in-or-out-button" class="text"
-                        style="float:right;margin:10px; font-size:18px; color:#2D4979; cursor:pointer; text-decoration:underline;">
-                        Sign In/Authorize
-                    </a>
-                    <a id="revoke-access-button" class="text"
-                        style="float:right;display:none; margin:10px; font-size:18px; color:#761F1D; cursor:pointer; text-decoration:underline;">
-                        Revoke access
-                    </a>
+                    <img id="avatar" class="avatar" title="login" src="avatar.png" alt="Avatar" >
+                    <img id="revoke" class="avatar" title="revoke access" src="remove.png" alt="Revoke" style="display: none;">
                 </td>
             </tr>
           </table>
 
         <div style="position: fixed;height: 100%;left: 0;right: 0;">
             <div id="toolbarCont" style="position:absolute;left:0;right:0;overflow: auto;">
-                <canvas style="margin:0" id="toolbar" width="1200" height="32"></canvas>
+                <canvas style="margin:0" id="toolbar" width="1500" height="32"></canvas>
             </div>
             <div id="canvasCont" style="position:absolute;left:0;right:0;bottom:0;overflow: auto;">
                 <canvas style="margin:0;" id="canvas" width="500" height="800"></canvas>
@@ -477,28 +489,7 @@
                                     var saveName = prompt("Che nome vuoi dare alla mappa?");
                                     if (saveName && saveName.length > 0) {
 
-                                        var saveData = {
-                                            mapNumber: settings.maps,
-                                            drawings: mapsLayout.map((ml) =>{
-                                                return ml.map((row) => {
-                                                    return row.map((c) => {
-                                                        var el = {
-                                                            drawable: c.drawable
-                                                        }
-                                                        if (c.citadel != undefined) {
-                                                            el.citadel = c.citadel;
-                                                        }
-                                                        if (c.backgroundSer != undefined) {
-                                                            el.backgroundSer = c.backgroundSer;
-                                                        }
-                                                        if (c.symbolSer != undefined) {
-                                                            el.symbolSer = c.symbolSer;
-                                                        }
-                                                        return el;
-                                                    });
-                                                });
-                                            })
-                                        };
+                                        var saveData = getMapSaveData();
                                         
                                         gapi.client.drive.files
                                             .list({
@@ -534,6 +525,61 @@
                         savec.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH, TBARH);
                         savec.x = startDownload + TBARH * 2;
                         toolbar.addChild(savec);
+                        
+                        var ihit = new createjs.Shape();
+                        var importa = queue.getResult("import");
+                        var importB = new createjs.Bitmap(importa);
+                        ihit.graphics.beginFill("#000").drawRect(0, 0, importB.getBounds().width, importB.getBounds().height);
+                        importB.scale = Math.floor((TBARH - 10) / importB.getBounds().height * 100)/100;
+                        importB.x = startDownload + TBARH * 3 + TBARH / 2 - (importB.getBounds().width * importB.scale / 2);
+                        importB.y = TBARH / 2 - (importB.getBounds().height * importB.scale / 2);
+                        importB.hitArea = ihit;
+                        importB.addEventListener('pressup', function(event) {
+                            var ok = !hasDrawings();
+                            if (!ok) {
+                                ok = confirm("Are you sure? This will reset current map.");
+                            }
+                            if (ok) {
+                                var input = $(document.createElement("input"));
+                                input.attr("type", "file");
+                                input.attr("accept", ".json");
+                                input.bind("change", loadFiles);
+                                input.trigger("click"); // opening dialog
+                                return false; // avoiding navigation
+                            }
+                        }, false);
+                        toolbar.addChild(importB);
+
+                        var importc = new createjs.Shape();
+                        importc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH, TBARH);
+                        importc.x = startDownload + TBARH * 3;
+                        toolbar.addChild(importc);
+
+                        
+                        var ehit = new createjs.Shape();
+                        var exportjson = queue.getResult("export");
+                        var exportB = new createjs.Bitmap(exportjson);
+                        ehit.graphics.beginFill("#000").drawRect(0, 0, exportB.getBounds().width, exportB.getBounds().height);
+                        exportB.scale = Math.floor((TBARH - 10) / exportB.getBounds().height * 100)/100;
+                        exportB.x = startDownload + TBARH * 4 + TBARH / 2 - (exportB.getBounds().width * exportB.scale / 2);
+                        exportB.y = TBARH / 2 - (exportB.getBounds().height * exportB.scale / 2);
+                        exportB.hitArea = ehit;
+                        exportB.addEventListener('pressup', function(event) {
+                            var ok = hasDrawings();
+                            if (!ok) {
+                                alert("There's no data to save on the map.");
+                            }
+                            else {
+                                var saveData = getMapSaveData();
+                                saveMapToFile("WarMap", JSON.stringify(saveData));
+                            }
+                        }, false);
+                        toolbar.addChild(exportB);
+
+                        var exportc = new createjs.Shape();
+                        exportc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH, TBARH);
+                        exportc.x = startDownload + TBARH * 4;
+                        toolbar.addChild(exportc);
 
                         toolbar.update();
 
@@ -555,9 +601,19 @@
                     queue.loadFile({src:"download.png", id:"download"});
                     queue.loadFile({src:"clear.png", id:"clear"});
                     queue.loadFile({src:"save.png", id:"save"});
+                    queue.loadFile({src:"import.png", id:"import"});
+                    queue.loadFile({src:"exportjson.png", id:"export"});
 
                 }, 100);
-                
+
+                $('#deleteMap').on('click', function() {
+                    deleteSavedMap();
+                });
+
+                $('#exportMap').on('click', function() {
+                    exportSavedMap();
+                });
+
                 $('#savedMaps').on('change', function() { 
                     if (this.selectedIndex > 0) {
                         gapi.client.drive.files
@@ -566,61 +622,7 @@
                                 alt: 'media'
                             }).then(function (data) {
                                 var result = data.result;
-                                settings.maps = result.mapNumber;
-                                clearCanvas();
-                                DrawMap();
-                                var bBG = toolbar.getChildByName("bBG");
-                                var rBG = toolbar.getChildByName("rBG");
-                                var gBG = toolbar.getChildByName("gBG");
-                                var blues = toolbar.getChildByName("blues");
-                                var reds = toolbar.getChildByName("reds");
-                                var greens = toolbar.getChildByName("greens");
-                                mapsLayout = result.drawings.map(
-                                    (mapLayout, m) => {
-                                        return mapLayout.map(
-                                            (r, row) => {
-                                                return r.map(
-                                                    (cell, column) => {
-                                                        if (cell.drawable && cell.backgroundSer) {
-                                                            if (cell.backgroundSer == "blue") cell.background = bBG.clone();
-                                                            if (cell.backgroundSer == "red") cell.background = rBG.clone();
-                                                            if (cell.backgroundSer == "green") cell.background = gBG.clone();
-                                                            cell.background.alpha = 0.6;
-                                                            cell.background.scale = Math.floor((SQUARE * SCALE) / TBARH  * 100)/100;
-                                                            cell.background.cache(0, 0, TBARH, TBARH);
-                                                            cell.background.x = m * MAPW + column * SQUARE * SCALE;
-                                                            cell.background.y = row * SQUARE * SCALE;
-
-                                                            cell.background.addEventListener('pressmove', function(event) {
-                                                                if(event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove") {
-                                                                    cellPress(event.stageX, event.stageY);
-                                                                } 
-                                                                if(lockScroll == true) event.nativeEvent.preventDefault();
-                                                                }, false);
-
-                                                            stage.addChild(cell.background);
-                                                        }
-                                                        if (cell.drawable && cell.symbolSer) {
-                                                            if (cell.symbolSer == "blue") cell.symbol = new createjs.Bitmap(blues.cacheCanvas);
-                                                            if (cell.symbolSer == "red") cell.symbol = new createjs.Bitmap(reds.cacheCanvas);
-                                                            if (cell.symbolSer == "green") cell.symbol = new createjs.Bitmap(greens.cacheCanvas);
-                                                            cell.symbol.scale = Math.floor(((SQUARE * 0.8) * pixelRatio * SCALE) / TBARH  * 100)/100;
-                                                            cell.symbol.cache(0, 0, cell.symbol.getBounds().width, cell.symbol.getBounds().height);
-                                                            cell.symbol.x = m * MAPW + column * SQUARE * SCALE + (SQUARE * 0.05) * SCALE;
-                                                            cell.symbol.y = row * SQUARE * SCALE + (SQUARE * 0.05) * SCALE;
-                                                            cell.symbol.addEventListener('pressmove', function(event) {
-                                                                if(event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove") {
-                                                                    cellPress(event.stageX, event.stageY);
-                                                                } 
-                                                                if(lockScroll == true) event.nativeEvent.preventDefault();
-                                                                }, false);
-                                                            stage.addChild(cell.symbol);
-                                                        }
-                                                        return cell;
-                                                    });
-                                            });
-                                    });
-                                stage.update();
+                                loadSavedMap(result);
                             });
                     }
                 });
@@ -951,6 +953,98 @@
                 downloadLink.click();
             }
 
+            function loadFiles() {
+                const fileList = this.files; /* now you can work with the file list */
+                var fr = new FileReader();
+                fr.onload = function () {
+                    loadSavedMap(JSON.parse(fr.result));
+                } 
+                fr.readAsText(this.files[0]);
+            }
+
+            function getMapSaveData() {
+                return {
+                    mapNumber: settings.maps,
+                    drawings: mapsLayout.map((ml) =>{
+                        return ml.map((row) => {
+                            return row.map((c) => {
+                                var el = {
+                                    drawable: c.drawable
+                                }
+                                if (c.citadel != undefined) {
+                                    el.citadel = c.citadel;
+                                }
+                                if (c.backgroundSer != undefined) {
+                                    el.backgroundSer = c.backgroundSer;
+                                }
+                                if (c.symbolSer != undefined) {
+                                    el.symbolSer = c.symbolSer;
+                                }
+                                return el;
+                            });
+                        });
+                    })
+                };
+            }
+
+            function loadSavedMap(result) {
+                settings.maps = result.mapNumber;
+                clearCanvas();
+                DrawMap();
+                var bBG = toolbar.getChildByName("bBG");
+                var rBG = toolbar.getChildByName("rBG");
+                var gBG = toolbar.getChildByName("gBG");
+                var blues = toolbar.getChildByName("blues");
+                var reds = toolbar.getChildByName("reds");
+                var greens = toolbar.getChildByName("greens");
+                mapsLayout = result.drawings.map(
+                    (mapLayout, m) => {
+                        return mapLayout.map(
+                            (r, row) => {
+                                return r.map(
+                                    (cell, column) => {
+                                        if (cell.drawable && cell.backgroundSer) {
+                                            if (cell.backgroundSer == "blue") cell.background = bBG.clone();
+                                            if (cell.backgroundSer == "red") cell.background = rBG.clone();
+                                            if (cell.backgroundSer == "green") cell.background = gBG.clone();
+                                            cell.background.alpha = 0.6;
+                                            cell.background.scale = Math.floor((SQUARE * SCALE) / TBARH  * 100)/100;
+                                            cell.background.cache(0, 0, TBARH, TBARH);
+                                            cell.background.x = m * MAPW + column * SQUARE * SCALE;
+                                            cell.background.y = row * SQUARE * SCALE;
+
+                                            cell.background.addEventListener('pressmove', function(event) {
+                                                if(event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove") {
+                                                    cellPress(event.stageX, event.stageY);
+                                                } 
+                                                if(lockScroll == true) event.nativeEvent.preventDefault();
+                                                }, false);
+
+                                            stage.addChild(cell.background);
+                                        }
+                                        if (cell.drawable && cell.symbolSer) {
+                                            if (cell.symbolSer == "blue") cell.symbol = new createjs.Bitmap(blues.cacheCanvas);
+                                            if (cell.symbolSer == "red") cell.symbol = new createjs.Bitmap(reds.cacheCanvas);
+                                            if (cell.symbolSer == "green") cell.symbol = new createjs.Bitmap(greens.cacheCanvas);
+                                            cell.symbol.scale = Math.floor(((SQUARE * 0.8) * pixelRatio * SCALE) / TBARH  * 100)/100;
+                                            cell.symbol.cache(0, 0, cell.symbol.getBounds().width, cell.symbol.getBounds().height);
+                                            cell.symbol.x = m * MAPW + column * SQUARE * SCALE + (SQUARE * 0.05) * SCALE;
+                                            cell.symbol.y = row * SQUARE * SCALE + (SQUARE * 0.05) * SCALE;
+                                            cell.symbol.addEventListener('pressmove', function(event) {
+                                                if(event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove") {
+                                                    cellPress(event.stageX, event.stageY);
+                                                } 
+                                                if(lockScroll == true) event.nativeEvent.preventDefault();
+                                                }, false);
+                                            stage.addChild(cell.symbol);
+                                        }
+                                        return cell;
+                                    });
+                            });
+                    });
+                stage.update();
+            }
+
             function clearCanvas() {
                 mapsLayout.map(
                     (mapLayout) => {
@@ -1018,12 +1112,46 @@
                 });
             }
 
+            function exportSavedMap() {
+                var fileId = $('#savedMaps').val();
+                if (fileId != null && fileId.length > 1) {
+                    
+                    gapi.client.drive.files
+                        .get({
+                            fileId: fileId,
+                            alt: 'media'
+                        }).then(function (data) {
+                            saveMapToFile(file, JSON.stringify(data.result));
+                        });
+                }
+            }
+            
+            function saveMapToFile(mapname, mapdata) {
+                let downloadLink = document.createElement('a');
+                downloadLink.setAttribute('download', mapname + '.json');
+                var file = new Blob([mapdata], {type: 'text/plain'});
+                downloadLink.href = URL.createObjectURL(file);
+                downloadLink.click();
+            }
+
+            function deleteSavedMap() {
+                var fileId = $('#savedMaps').val();
+                if (fileId != null && fileId.length > 1 && confirm("Are you sure? The map " + $( "#savedMaps option:selected" ).text() + " will be deleted permanently.")) {
+                    deleteMapData(fileId);
+                }
+            }
+            
+
         </script>
 
         <script async defer src="https://apis.google.com/js/api.js"
                 onload="this.onload=function(){};handleClientLoad()"
                 onreadystatechange="if (this.readyState === 'complete') this.onload()">
         </script>
+
+        <div style="position: absolute; bottom:0;">
+            Icons made by <a href="https://www.flaticon.com/authors/pixel-perfect" title="Pixel perfect"></a>, <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> and <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+        </div>
     </body>
 </html>
 
