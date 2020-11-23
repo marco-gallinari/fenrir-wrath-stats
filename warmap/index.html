@@ -805,7 +805,7 @@
                 stage.addEventListener('mousedown', function(event) {
                         if (!scrolling && !cellPress(event.stageX, event.stageY)) {
                             curDown = true;
-                            if (event.nativeEvent.type = "touchstart") {
+                            if (event.nativeEvent.type = "touchstart" && event.nativeEvent.touches) {
                                 curXPos = event.nativeEvent.touches[0].pageX;
                                 curYPos = event.nativeEvent.touches[0].pageY;
                             }
@@ -825,13 +825,13 @@
                             scrolling = true;
                             var x = event.nativeEvent.pageX;
                             var y = event.nativeEvent.pageY;
-                            if (event.nativeEvent.type = "touchstart") {
+                            if (event.nativeEvent.type = "touchstart" && event.nativeEvent.touches) {
                                 x = event.nativeEvent.touches[0].pageX;
                                 y = event.nativeEvent.touches[0].pageY;
                             }
                             $('#canvasCont').scrollLeft($('#canvasCont').scrollLeft() + (curXPos - x))
                                             .scrollTop($('#canvasCont').scrollTop() + (curYPos - y));
-                            if (event.nativeEvent.type = "touchstart") {
+                            if (event.nativeEvent.type = "touchstart" && event.nativeEvent.touches) {
                                 curXPos = event.nativeEvent.touches[0].pageX;
                                 curYPos = event.nativeEvent.touches[0].pageY;
                             }
