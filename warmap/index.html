@@ -912,13 +912,13 @@
                     alert("hours value invalid");
                     return false;
                 }
-                settings.islands1Avg = islands1power;
-                settings.islands2Avg = islands2power;
-                settings.islands3Avg = islands3power;
-                settings.manarain1Avg = manarain1power;
-                settings.manarain2Avg = manarain2power;
-                settings.manarain3Avg = manarain3power;
-                settings.hours = hours;
+                settings.islands1Avg = parseFloat(islands1power);
+                settings.islands2Avg = parseFloat(islands2power);
+                settings.islands3Avg = parseFloat(islands3power);
+                settings.manarain1Avg = parseFloat(manarain1power);
+                settings.manarain2Avg = parseFloat(manarain2power);
+                settings.manarain3Avg = parseFloat(manarain3power);
+                settings.hours = parseFloat(hours);
                 settings.manaShield = form["shield"].value;
                 calculateMana();
                 $('#manaSettingsModal').css("display", "none");
