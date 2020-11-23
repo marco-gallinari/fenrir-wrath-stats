@@ -595,20 +595,20 @@
                         toolbar.addChild(calcB);
 
                         var manaText = new createjs.Text("25.4k/s", "100px Arial", "#555");
-                        manaText.name = "mana";
+                        manaText.name = "manaMin";
                         manaText.scale = TBARH / label1.getMeasuredHeight() / 2;
                         manaText.x = startDownload + TBARH * 6 + 150;
                         manaText.y = Math.floor(TBARH / 3);
                         manaText.textAlign = "end";
                         toolbar.addChild(manaText);
 
-                        var manaText = new createjs.Text("12M/h", "100px Arial", "#555");
-                        manaText.name = "mana";
-                        manaText.scale = TBARH / label1.getMeasuredHeight() / 2;
-                        manaText.x = startDownload + TBARH * 6 + 150;
-                        manaText.y = Math.floor(TBARH / 3);
-                        manaText.textAlign = "end";
-                        toolbar.addChild(manaText);
+                        var manaText2 = new createjs.Text("12M/h", "100px Arial", "#555");
+                        manaText2.name = "manaTot";
+                        manaText2.scale = TBARH / label1.getMeasuredHeight() / 2;
+                        manaText2.x = startDownload + TBARH * 6 + 150;
+                        manaText2.y = Math.floor(TBARH / 3);
+                        manaText2.textAlign = "end";
+                        toolbar.addChild(manaText2);
 
                         var calcc = new createjs.Shape();
                         calcc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH + 320, TBARH);
