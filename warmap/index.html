@@ -917,6 +917,8 @@
                 settings.hours = hours;
                 settings.manaShield = form["shield"].value;
                 calculateMana();
+                $('#manaSettingsModal').css("display", "none");
+                return false;
             }
 
             function handleInteraction(event) {
