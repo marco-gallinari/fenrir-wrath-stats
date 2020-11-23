@@ -598,13 +598,11 @@
                         manaText.name = "mana";
                         manaText.scale = TBARH / label1.getMeasuredHeight();
                         manaText.x = startDownload + TBARH * 6;
-                        //manaText.textAlign = "end";
-                        manaText.textBaseline = "alphabetic";
                         toolbar.addChild(manaText);
 
                         var calcc = new createjs.Shape();
                         calcc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH + 500, TBARH);
-                        calcc.x = startDownload + TBARH;
+                        calcc.x = startDownload + TBARH * 5;
                         toolbar.addChild(calcc);
 
                         toolbar.update();
