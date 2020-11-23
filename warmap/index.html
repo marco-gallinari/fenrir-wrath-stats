@@ -1433,6 +1433,15 @@
                                                         manaRainMultiplier = 0.5;
                                                     }
                                                 }
+                                                else if (column >= 6) {
+                                                    var center = mapsLayout[m][1][7];
+                                                    if(center.symbolSer == null) {
+                                                        manaRainMultiplier = 1;
+                                                    }
+                                                    else if (center.symbolSer != settings.manaShield) {
+                                                        manaRainMultiplier = 0.5;
+                                                    }
+                                                }
                                                 else if (column == 0 && m == 0) {
                                                     manaRainMultiplier = 1;
                                                 }
@@ -1448,6 +1457,15 @@
                                                         manaRainMultiplier = 0.5;
                                                     }
                                                 }
+                                                else if (column >= 6) {
+                                                    var center = mapsLayout[m][1][7];
+                                                    if(center.symbolSer == null) {
+                                                        manaRainMultiplier = 1;
+                                                    }
+                                                    else if (center.symbolSer != settings.manaShield) {
+                                                        manaRainMultiplier = 0.5;
+                                                    }
+                                                }
                                                 else if (column == 0 && m == 0) {
                                                     manaRainMultiplier = 1;
                                                 }
@@ -1456,6 +1474,15 @@
                                             if (manaRainMultiplier == 2) {
                                                 if (column == 0 && m > 0) {
                                                     var center = mapsLayout[m-1][7][7];
+                                                    if(center.symbolSer == null) {
+                                                        manaRainMultiplier = 1;
+                                                    }
+                                                    else if (center.symbolSer != settings.manaShield) {
+                                                        manaRainMultiplier = 0.5;
+                                                    }
+                                                }
+                                                else if (column >= 6) {
+                                                    var center = mapsLayout[m][1][7];
                                                     if(center.symbolSer == null) {
                                                         manaRainMultiplier = 1;
                                                     }
