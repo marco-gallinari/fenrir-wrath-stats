@@ -580,6 +580,30 @@
                         exportc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH, TBARH);
                         exportc.x = startDownload + TBARH * 4;
                         toolbar.addChild(exportc);
+                        
+                        var calchit = new createjs.Shape();
+                        var calc = queue.getResult("calc");
+                        var calcB = new createjs.Bitmap(calc);
+                        calchit.graphics.beginFill("#000").drawRect(0, 0, calcB.getBounds().width, calcB.getBounds().height);
+                        calcB.scale = Math.floor(TBARH / calcB.getBounds().height * 100)/100;
+                        calcB.x = startDownload + TBARH + TBARH / 2 - (calcB.getBounds().width * calcB.scale / 2);
+                        calcB.y = TBARH / 2 - (calcB.getBounds().height * calcB.scale / 2);
+                        calcB.hitArea = calchit;
+                        calcB.addEventListener('pressup', function(event) {
+                            // POPUP WITH CALC SETTINGS
+                        }, false);
+                        toolbar.addChild(calcB);
+
+                        var manaText = new createjs.Text("Hello World", "20px Arial", "#ff7700");
+                        manaText.textAlign = "end";
+                        manaText.textBaseline = "alphabetic";
+                        manaText.x = 500;
+                        toolbar.addChild(manaText);
+
+                        var calcc = new createjs.Shape();
+                        calcc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH + 500, TBARH);
+                        calcc.x = startDownload + TBARH;
+                        toolbar.addChild(calcc);
 
                         toolbar.update();
 
@@ -603,6 +627,7 @@
                     queue.loadFile({src:"save.png", id:"save"});
                     queue.loadFile({src:"import.png", id:"import"});
                     queue.loadFile({src:"exportjson.png", id:"export"});
+                    queue.loadFile({src:"calculator.png", id:"calc"});
 
                 }, 100);
 
@@ -1150,7 +1175,7 @@
         </script>
 
         <div style="position: absolute; bottom:0;">
-            Icons made by <a href="https://www.flaticon.com/authors/pixel-perfect" title="Pixel perfect"></a>, <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> and <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+            Icons made by <a href="https://www.flaticon.com/authors/pixel-perfect" title="Pixel perfect">Pixel perfect</a>, <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> and <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
         </div>
     </body>
 </html>
