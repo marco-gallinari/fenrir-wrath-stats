@@ -596,8 +596,10 @@
 
                         var manaText = new createjs.Text("Hello World", "100px Arial", "#555");
                         manaText.name = "mana";
-                        manaText.scale = TBARH / label1.getMeasuredHeight();
-                        manaText.x = startDownload + TBARH * 6;
+                        manaText.scale = TBARH / label1.getMeasuredHeight() / 2;
+                        manaText.x = startDownload + TBARH * 6 + 500;
+                        manatext.y = TBARH / 2 - 2;
+                        manaText.textAlign = "end";
                         toolbar.addChild(manaText);
 
                         var calcc = new createjs.Shape();
