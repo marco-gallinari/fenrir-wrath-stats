@@ -594,16 +594,24 @@
                         }, false);
                         toolbar.addChild(calcB);
 
-                        var manaText = new createjs.Text("Hello World", "100px Arial", "#555");
+                        var manaText = new createjs.Text("25.4k/s", "100px Arial", "#555");
                         manaText.name = "mana";
                         manaText.scale = TBARH / label1.getMeasuredHeight() / 2;
-                        manaText.x = startDownload + TBARH * 6 + 160;
+                        manaText.x = startDownload + TBARH * 6 + 150;
+                        manaText.y = Math.floor(TBARH / 3);
+                        manaText.textAlign = "end";
+                        toolbar.addChild(manaText);
+
+                        var manaText = new createjs.Text("12M/h", "100px Arial", "#555");
+                        manaText.name = "mana";
+                        manaText.scale = TBARH / label1.getMeasuredHeight() / 2;
+                        manaText.x = startDownload + TBARH * 6 + 150;
                         manaText.y = Math.floor(TBARH / 3);
                         manaText.textAlign = "end";
                         toolbar.addChild(manaText);
 
                         var calcc = new createjs.Shape();
-                        calcc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH + 180, TBARH);
+                        calcc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH + 320, TBARH);
                         calcc.x = startDownload + TBARH * 5;
                         toolbar.addChild(calcc);
 
@@ -936,10 +944,10 @@
                     else {
                         cell.symbol = new createjs.Bitmap(settings.selectedShield.cacheCanvas);
                         cell.symbolSer = settings.selectedShieldSer;
-                        cell.symbol.scale = Math.floor(((SQUARE * 0.80) * pixelRatio * SCALE) / TBARH  * 100)/100;
+                        cell.symbol.scale = Math.floor(((SQUARE * 0.50) * pixelRatio * SCALE) / TBARH  * 100)/100;
                         cell.symbol.cache(0, 0, cell.symbol.getBounds().width, cell.symbol.getBounds().height);
-                        cell.symbol.x = m * MAPW + column * SQUARE * SCALE + (SQUARE * 0.05) * SCALE;
-                        cell.symbol.y = row * SQUARE * SCALE + (SQUARE * 0.05) * SCALE;
+                        cell.symbol.x = m * MAPW + column * SQUARE * SCALE + (SQUARE * 0.15) * SCALE;
+                        cell.symbol.y = row * SQUARE * SCALE + (SQUARE * 0.15) * SCALE;
                         cell.symbol.addEventListener('pressmove', function(event) {
                             if(event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove") {
                                 cellPress(event.stageX, event.stageY);
