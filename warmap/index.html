@@ -597,13 +597,13 @@
                         var manaText = new createjs.Text("Hello World", "100px Arial", "#555");
                         manaText.name = "mana";
                         manaText.scale = TBARH / label1.getMeasuredHeight() / 2;
-                        manaText.x = startDownload + TBARH * 6 + 500;
-                        manaText.y = Math.floor((TBARH / 2) - 2);
+                        manaText.x = startDownload + TBARH * 6 + 200;
+                        manaText.y = Math.floor(TBARH / 3);
                         manaText.textAlign = "end";
                         toolbar.addChild(manaText);
 
                         var calcc = new createjs.Shape();
-                        calcc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH + 500, TBARH);
+                        calcc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH + 180, TBARH);
                         calcc.x = startDownload + TBARH * 5;
                         toolbar.addChild(calcc);
 
