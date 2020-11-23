@@ -50,21 +50,21 @@
             }
 
             /* The Close Button */
-            .close {
+            .modal-content .close {
                 color: #aaaaaa;
                 float: right;
                 font-size: 28px;
                 font-weight: bold;
             }
 
-            .close:hover,
-            .close:focus {
+            .modal-content .close:hover,
+            .modal-content .close:focus {
                 color: #000;
                 text-decoration: none;
                 cursor: pointer;
             }
 
-            input[type=text] {
+            .modal-content input[type=text], .modal-content select {
                 width: 100%;
                 padding: 12px 20px;
                 margin: 8px 0;
@@ -74,7 +74,7 @@
                 box-sizing: border-box;
             }
 
-            input[type=submit] {
+            .modal-content input[type=submit] {
                 width: 100%;
                 background-color: #4CAF50;
                 color: white;
@@ -85,11 +85,11 @@
                 cursor: pointer;
             }
 
-            input[type=submit]:hover {
+            .modal-content input[type=submit]:hover {
                 background-color: #45a049;
             }
 
-            div {
+            .modal-content div {
                 border-radius: 5px;
                 background-color: #f2f2f2;
                 padding: 20px;
@@ -210,32 +210,32 @@
         <div id="manaSettingsModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-              <span class="close">&times;</span>
-              <form id="manaForm" onsubmit="return validateManaForm()">
-                <label for="islands1power">average power for 1x islands (k)</label>
-                <input type="text" id="islands1power" name="islands1power" required>
-                <label for="islands2power">average power for 2x islands (k)</label>
-                <input type="text" id="islands2power" name="islands2power" required>
-                <label for="islands3power">average power for 3x islands (k)</label>
-                <input type="text" id="islands3power" name="islands3power" required>
-                <label for="manarain1power">average power for 1x manarain (k)</label>
-                <input type="text" id="manarain1power" name="manarain1power" required>
-                <label for="manarain2power">average power for 2x manarain (k)</label>
-                <input type="text" id="manarain2power" name="manarain2power" required>
-                <label for="manarain3power">average power for 3x manarain (k)</label>
-                <input type="text" id="manarain3power" name="manarain3power" required>
-                <label for="hours">calculation hours</label>
-                <input type="text" id="hours" name="hours" required>
-                <label for="shield">shield used for calculation</label>
-                <select id="shield" name="shield">
-                  <option value="blue">Blue shields</option>
-                  <option value="red">Red shields</option>
-                  <option value="green">Green shields</option>
-                </select>
-                <input type="submit" value="Save">
-              </form>
+                <span class="close">&times;</span>
+                <form id="manaForm" onsubmit="return validateManaForm()">
+                    <label for="islands1power">average power for 1x islands (k)</label>
+                    <input type="text" id="islands1power" name="islands1power" required>
+                    <label for="islands2power">average power for 2x islands (k)</label>
+                    <input type="text" id="islands2power" name="islands2power" required>
+                    <label for="islands3power">average power for 3x islands (k)</label>
+                    <input type="text" id="islands3power" name="islands3power" required>
+                    <label for="manarain1power">average power for 1x manarain (k)</label>
+                    <input type="text" id="manarain1power" name="manarain1power" required>
+                    <label for="manarain2power">average power for 2x manarain (k)</label>
+                    <input type="text" id="manarain2power" name="manarain2power" required>
+                    <label for="manarain3power">average power for 3x manarain (k)</label>
+                    <input type="text" id="manarain3power" name="manarain3power" required>
+                    <label for="hours">calculation hours</label>
+                    <input type="text" id="hours" name="hours" required>
+                    <label for="shield">shield used for calculation</label>
+                    <select id="shield" name="shield">
+                        <option value="blue">Blue shields</option>
+                        <option value="red">Red shields</option>
+                        <option value="green">Green shields</option>
+                    </select>
+                    <input type="submit" value="Save">
+                </form>
             </div>
-          </div>
+        </div>
 
         <script>
             var H, W, SCALE, MAPW, SQUARE;
