@@ -25,6 +25,44 @@
                 border-radius: 50%;
                 border: 1px solid lightgray;
             }
+            /* The Modal (background) */
+            .modal {
+                display: none; /* Hidden by default */
+                position: fixed; /* Stay in place */
+                z-index: 1; /* Sit on top */
+                padding-top: 100px; /* Location of the box */
+                left: 0;
+                top: 0;
+                width: 100%; /* Full width */
+                height: 100%; /* Full height */
+                overflow: auto; /* Enable scroll if needed */
+                background-color: rgb(0,0,0); /* Fallback color */
+                background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            }
+
+            /* Modal Content */
+            .modal-content {
+                background-color: #fefefe;
+                margin: auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+            }
+
+            /* The Close Button */
+            .close {
+                color: #aaaaaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: #000;
+                text-decoration: none;
+                cursor: pointer;
+            }
         </style>
     </head>
     <body style="margin:0;">
@@ -138,6 +176,15 @@
             </div>
         </div>
 
+        <div id="manaSettingsModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+              <span class="close">&times;</span>
+              <p>Some text in the Modal..</p>
+            </div>
+          </div>
+          
+
         <script>
             var H, W, SCALE, MAPW, SQUARE;
             var clanMap, neighbourMap;
@@ -184,8 +231,12 @@
 
                 resize();
                 resize();
-                
+
                 initializeMapSlots();
+
+                $('.close').on("click", function() {
+                    $('#manaSettingsModal').css("display", "none");
+                })
 
                 setTimeout(() => { 
                     var queue = new createjs.LoadQueue(true, "", "");
@@ -562,7 +613,6 @@
                         importc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH, TBARH);
                         importc.x = startDownload + TBARH * 3;
                         toolbar.addChild(importc);
-
                         
                         var ehit = new createjs.Shape();
                         var exportjson = queue.getResult("export");
@@ -598,11 +648,11 @@
                         calcB.y = TBARH / 2 - (calcB.getBounds().height * calcB.scale / 2);
                         calcB.hitArea = calchit;
                         calcB.addEventListener('pressup', function(event) {
-                            // POPUP WITH CALC SETTINGS
+                            $('#manaSettingsModal').css("display", "block");
                         }, false);
                         toolbar.addChild(calcB);
 
-                        var manaText = new createjs.Text("25.4k/s", "100px Arial", "#555");
+                        var manaText = new createjs.Text("25.4 k/s", "100px Arial", "#555");
                         manaText.name = "manaMin";
                         manaText.scale = TBARH / label1.getMeasuredHeight() / 2;
                         manaText.x = startDownload + TBARH * 6 + 100;
@@ -610,7 +660,7 @@
                         manaText.textAlign = "center";
                         toolbar.addChild(manaText);
 
-                        var manaText2 = new createjs.Text("12M/h", "100px Arial", "#555");
+                        var manaText2 = new createjs.Text("12 M/h", "100px Arial", "#555");
                         manaText2.name = "manaHrs";
                         manaText2.scale = TBARH / label1.getMeasuredHeight() / 2;
                         manaText2.x = startDownload + TBARH * 6 + 200;
@@ -618,7 +668,7 @@
                         manaText2.textAlign = "center";
                         toolbar.addChild(manaText2);
 
-                        var manaText3 = new createjs.Text("119M in 36 hrs", "100px Arial", "#555");
+                        var manaText3 = new createjs.Text("119 M in 36 hrs", "100px Arial", "#555");
                         manaText3.name = "manaTot";
                         manaText3.scale = TBARH / label1.getMeasuredHeight() / 2;
                         manaText3.x = startDownload + TBARH * 6 + 350;
