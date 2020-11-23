@@ -154,7 +154,15 @@
             var settings = {
                 maps: 3,
                 selectedShield: null,
-                selectedBackground: null
+                selectedBackground: null,
+                manaShield: "blue",
+                islands1Avg: 0,
+                islands2Avg: 20, 
+                islands2Avg: 35,
+                manarain1Avg: 20,
+                manarain2Avg: 40,
+                manarain3Avg: 50,
+                hours: 36
             }
 
             var mapSlots = [];
@@ -597,21 +605,37 @@
                         var manaText = new createjs.Text("25.4k/s", "100px Arial", "#555");
                         manaText.name = "manaMin";
                         manaText.scale = TBARH / label1.getMeasuredHeight() / 2;
-                        manaText.x = startDownload + TBARH * 6 + 150;
+                        manaText.x = startDownload + TBARH * 6 + 100;
                         manaText.y = Math.floor(TBARH / 3);
-                        manaText.textAlign = "end";
+                        manaText.textAlign = "center";
                         toolbar.addChild(manaText);
 
                         var manaText2 = new createjs.Text("12M/h", "100px Arial", "#555");
-                        manaText2.name = "manaTot";
+                        manaText2.name = "manaHrs";
                         manaText2.scale = TBARH / label1.getMeasuredHeight() / 2;
-                        manaText2.x = startDownload + TBARH * 6 + 300;
+                        manaText2.x = startDownload + TBARH * 6 + 200;
                         manaText2.y = Math.floor(TBARH / 3);
-                        manaText2.textAlign = "end";
+                        manaText2.textAlign = "center";
                         toolbar.addChild(manaText2);
 
+                        var manaText3 = new createjs.Text("119M in 36 hrs", "100px Arial", "#555");
+                        manaText3.name = "manaTot";
+                        manaText3.scale = TBARH / label1.getMeasuredHeight() / 2;
+                        manaText3.x = startDownload + TBARH * 6 + 350;
+                        manaText3.y = Math.floor(TBARH / 3);
+                        manaText3.textAlign = "center";
+                        toolbar.addChild(manaText3);
+
+                        var manaText4 = new createjs.Text("16M power", "100px Arial", "#555");
+                        manaText4.name = "manaPow";
+                        manaText4.scale = TBARH / label1.getMeasuredHeight() / 2;
+                        manaText4.x = startDownload + TBARH * 6 + 500;
+                        manaText4.y = Math.floor(TBARH / 3);
+                        manaText4.textAlign = "center";
+                        toolbar.addChild(manaText4);
+
                         var calcc = new createjs.Shape();
-                        calcc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH + 320, TBARH);
+                        calcc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH + 580, TBARH);
                         calcc.x = startDownload + TBARH * 5;
                         toolbar.addChild(calcc);
 
@@ -776,23 +800,52 @@
                             (x == 15 && (y < 2 || y > 5)) 
                             ) {
                             mapRow.push({
-                                drawable: false
+                                drawable: false,
+                                islandManaMultiplier: x <= 5 ? 3 : (x <= 12 ? 2 : 1),
+                                manaRainMultiplier: checkManaRain(x, y)
                             });
                             continue;
                         }
                         if (x == 15 && y == 4) {
                             mapRow.push({
                                 drawable: false,
-                                citadel: true
+                                citadel: true,
+                                islandManaMultiplier: x <= 5 ? 3 : (x <= 12 ? 2 : 1),
+                                manaRainMultiplier: checkManaRain(x, y)
                             });
                             continue;
                         }
                         mapRow.push({
-                            drawable: true
+                            drawable: true,
+                            islandManaMultiplier: x <= 5 ? 3 : (x <= 12 ? 2 : 1),
+                            manaRainMultiplier: checkManaRain(x, y)
                         });
                     }
                     mapSlots.push(mapRow);
                 }
+            }
+
+            function checkManaRain(x, y) {
+                if (
+                    (y == 0 && x >= 1 && x <= 2) ||
+                    (y >= 6 && y <= 7 && x <= 2)
+                ) {
+                    return 3;
+                }
+                if (
+                    (y == 0 && x >= 3 && x <= 5) ||
+                    (y == 7 && x >= 3 && x <= 5) ||
+                    (y == 6 && x == 5)
+                ) {
+                    return 2;
+                }
+                if (
+                    (y == 0 && x >= 6 && x <= 8) ||
+                    (y >= 6 && y <= 7 && x >= 6 && x <= 8)
+                ) {
+                    return 1;
+                }
+                return 0;
             }
 
             function DrawMap() {
