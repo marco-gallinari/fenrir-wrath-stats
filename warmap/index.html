@@ -1417,7 +1417,10 @@
                                 r.forEach(
                                     (cell, column) => {
                                         if (cell.drawable && cell.symbolSer && cell.symbolSer == settings.manaShield) {
-                                            var pwr = (cell.islandManaMultiplier == 1 ? settings.islands1Avg : (cell.islandManaMultiplier == 2 ? settings.islands2Avg : settings.islands3Avg));
+                                            var pwr = 
+                                                cell.manaRainMultiplier == 1 ?
+                                                (cell.islandManaMultiplier == 1 ? settings.islands1Avg : (cell.islandManaMultiplier == 2 ? settings.islands2Avg : settings.islands3Avg)) :
+                                                (cell.manaRainMultiplier == 2 ? settings.manarain1Avg : (cell.manaRainMultiplier == 3 ? settings.manarain2Avg : settings.manarain3Avg));
                                             
                                             var manaRainMultiplier = cell.manaRainMultiplier;
                                             if (manaRainMultiplier == 5) {
