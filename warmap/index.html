@@ -585,7 +585,7 @@
                         var calc = queue.getResult("calc");
                         var calcB = new createjs.Bitmap(calc);
                         calchit.graphics.beginFill("#000").drawRect(0, 0, calcB.getBounds().width, calcB.getBounds().height);
-                        calcB.scale = Math.floor(TBARH / calcB.getBounds().height * 100)/100;
+                        calcB.scale = Math.floor((TBARH - 5) / calcB.getBounds().height * 100)/100;
                         calcB.x = startDownload + TBARH * 5 + TBARH / 2 - (calcB.getBounds().width * calcB.scale / 2);
                         calcB.y = TBARH / 2 - (calcB.getBounds().height * calcB.scale / 2);
                         calcB.hitArea = calchit;
@@ -595,7 +595,7 @@
                         toolbar.addChild(calcB);
 
                         var manaText = new createjs.Text("Hello World", "20px Arial", "#ff7700");
-                        manaText.textAlign = "end";
+                        //manaText.textAlign = "end";
                         manaText.textBaseline = "alphabetic";
                         manaText.x = startDownload + TBARH * 6;
                         toolbar.addChild(manaText);
