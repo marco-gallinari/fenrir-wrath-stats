@@ -594,10 +594,12 @@
                         }, false);
                         toolbar.addChild(calcB);
 
-                        var manaText = new createjs.Text("Hello World", "20px Arial", "#ff7700");
+                        var manaText = new createjs.Text("Hello World", "100px Arial", "#555");
+                        manaText.name = "mana";
+                        manaText.scale = TBARH / label1.getMeasuredHeight();
+                        manaText.x = startDownload + TBARH * 6;
                         //manaText.textAlign = "end";
                         manaText.textBaseline = "alphabetic";
-                        manaText.x = startDownload + TBARH * 6;
                         toolbar.addChild(manaText);
 
                         var calcc = new createjs.Shape();
