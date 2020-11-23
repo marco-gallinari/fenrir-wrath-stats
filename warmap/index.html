@@ -605,7 +605,7 @@
                         var manaText2 = new createjs.Text("12M/h", "100px Arial", "#555");
                         manaText2.name = "manaTot";
                         manaText2.scale = TBARH / label1.getMeasuredHeight() / 2;
-                        manaText2.x = startDownload + TBARH * 6 + 150;
+                        manaText2.x = startDownload + TBARH * 6 + 300;
                         manaText2.y = Math.floor(TBARH / 3);
                         manaText2.textAlign = "end";
                         toolbar.addChild(manaText2);
@@ -946,8 +946,8 @@
                         cell.symbolSer = settings.selectedShieldSer;
                         cell.symbol.scale = Math.floor(((SQUARE * 0.50) * pixelRatio * SCALE) / TBARH  * 100)/100;
                         cell.symbol.cache(0, 0, cell.symbol.getBounds().width, cell.symbol.getBounds().height);
-                        cell.symbol.x = m * MAPW + column * SQUARE * SCALE + (SQUARE * 0.15) * SCALE;
-                        cell.symbol.y = row * SQUARE * SCALE + (SQUARE * 0.15) * SCALE;
+                        cell.symbol.x = m * MAPW + column * SQUARE * SCALE + (SQUARE * 0.2) * SCALE;
+                        cell.symbol.y = row * SQUARE * SCALE + (SQUARE * 0.2) * SCALE;
                         cell.symbol.addEventListener('pressmove', function(event) {
                             if(event.nativeEvent.buttons == 1 || event.nativeEvent.type == "touchmove") {
                                 cellPress(event.stageX, event.stageY);
