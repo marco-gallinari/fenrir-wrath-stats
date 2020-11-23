@@ -63,6 +63,37 @@
                 text-decoration: none;
                 cursor: pointer;
             }
+
+            input[type=text] {
+                width: 100%;
+                padding: 12px 20px;
+                margin: 8px 0;
+                display: inline-block;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+
+            input[type=submit] {
+                width: 100%;
+                background-color: #4CAF50;
+                color: white;
+                padding: 14px 20px;
+                margin: 8px 0;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            input[type=submit]:hover {
+                background-color: #45a049;
+            }
+
+            div {
+                border-radius: 5px;
+                background-color: #f2f2f2;
+                padding: 20px;
+            }
         </style>
     </head>
     <body style="margin:0;">
@@ -180,10 +211,31 @@
             <!-- Modal content -->
             <div class="modal-content">
               <span class="close">&times;</span>
-              <p>Some text in the Modal..</p>
+              <form id="manaForm" onsubmit="return validateManaForm()">
+                <label for="islands1power">average power for 1x islands (k)</label>
+                <input type="text" id="islands1power" name="islands1power" required>
+                <label for="islands2power">average power for 2x islands (k)</label>
+                <input type="text" id="islands2power" name="islands2power" required>
+                <label for="islands3power">average power for 3x islands (k)</label>
+                <input type="text" id="islands3power" name="islands3power" required>
+                <label for="manarain1power">average power for 1x manarain (k)</label>
+                <input type="text" id="manarain1power" name="manarain1power" required>
+                <label for="manarain2power">average power for 2x manarain (k)</label>
+                <input type="text" id="manarain2power" name="manarain2power" required>
+                <label for="manarain3power">average power for 3x manarain (k)</label>
+                <input type="text" id="manarain3power" name="manarain3power" required>
+                <label for="hours">calculation hours</label>
+                <input type="text" id="hours" name="hours" required>
+                <label for="shield">shield used for calculation</label>
+                <select id="shield" name="shield">
+                  <option value="blue">Blue shields</option>
+                  <option value="red">Red shields</option>
+                  <option value="green">Green shields</option>
+                </select>
+                <input type="submit" value="Save">
+              </form>
             </div>
           </div>
-          
 
         <script>
             var H, W, SCALE, MAPW, SQUARE;
@@ -203,9 +255,9 @@
                 selectedShield: null,
                 selectedBackground: null,
                 manaShield: "blue",
-                islands1Avg: 0,
-                islands2Avg: 20, 
-                islands2Avg: 35,
+                islands1Avg: 1,
+                islands2Avg: 20,  
+                islands3Avg: 35,
                 manarain1Avg: 20,
                 manarain2Avg: 40,
                 manarain3Avg: 50,
@@ -236,7 +288,7 @@
 
                 $('.close').on("click", function() {
                     $('#manaSettingsModal').css("display", "none");
-                })
+                });
 
                 setTimeout(() => { 
                     var queue = new createjs.LoadQueue(true, "", "");
@@ -648,11 +700,19 @@
                         calcB.y = TBARH / 2 - (calcB.getBounds().height * calcB.scale / 2);
                         calcB.hitArea = calchit;
                         calcB.addEventListener('pressup', function(event) {
+                            $('#islands1power').val(settings.islands1Avg);
+                            $('#islands2power').val(settings.islands2Avg);
+                            $('#islands3power').val(settings.islands3Avg);
+                            $('#manarain1power').val(settings.manarain1Avg);
+                            $('#manarain2power').val(settings.manarain2Avg);
+                            $('#manarain3power').val(settings.manarain3Avg);
+                            $('#hours').val(settings.hours);
+                            $('#shield').val(settings.manaShield);
                             $('#manaSettingsModal').css("display", "block");
                         }, false);
                         toolbar.addChild(calcB);
 
-                        var manaText = new createjs.Text("25.4 k/s", "100px Arial", "#555");
+                        var manaText = new createjs.Text("0 k/s", "100px Arial", "#555");
                         manaText.name = "manaMin";
                         manaText.scale = TBARH / label1.getMeasuredHeight() / 2;
                         manaText.x = startDownload + TBARH * 6 + 100;
@@ -660,7 +720,7 @@
                         manaText.textAlign = "center";
                         toolbar.addChild(manaText);
 
-                        var manaText2 = new createjs.Text("12 M/h", "100px Arial", "#555");
+                        var manaText2 = new createjs.Text("0 M/h", "100px Arial", "#555");
                         manaText2.name = "manaHrs";
                         manaText2.scale = TBARH / label1.getMeasuredHeight() / 2;
                         manaText2.x = startDownload + TBARH * 6 + 200;
@@ -668,7 +728,7 @@
                         manaText2.textAlign = "center";
                         toolbar.addChild(manaText2);
 
-                        var manaText3 = new createjs.Text("119 M in 36 hrs", "100px Arial", "#555");
+                        var manaText3 = new createjs.Text("0 M in 0 hrs", "100px Arial", "#555");
                         manaText3.name = "manaTot";
                         manaText3.scale = TBARH / label1.getMeasuredHeight() / 2;
                         manaText3.x = startDownload + TBARH * 6 + 350;
@@ -676,7 +736,7 @@
                         manaText3.textAlign = "center";
                         toolbar.addChild(manaText3);
 
-                        var manaText4 = new createjs.Text("16M power", "100px Arial", "#555");
+                        var manaText4 = new createjs.Text("0 M power", "100px Arial", "#555");
                         manaText4.name = "manaPow";
                         manaText4.scale = TBARH / label1.getMeasuredHeight() / 2;
                         manaText4.x = startDownload + TBARH * 6 + 500;
@@ -811,6 +871,54 @@
                 toolbar.update();
             }
             
+            function validateManaForm() {
+                var form = document.forms["manaSettingsModal"];
+                var islands1power = form["islands1power"].value;
+                if (isNaN(islands1power) || islands1power < 1) {
+                    alert("1x islands value invalid");
+                    return false;
+                }
+                var islands2power = form["islands2power"].value;
+                if (isNaN(islands2power) || islands2power < 1) {
+                    alert("2x islands value invalid");
+                    return false;
+                }
+                var islands3power = form["islands3power"].value;
+                if (isNaN(islands3power) || islands3power < 1) {
+                    alert("3x islands value invalid");
+                    return false;
+                }
+                var manarain1power = form["manarain1power"].value;
+                if (isNaN(manarain1power) || manarain1power < 1) {
+                    alert("1x manarain value invalid");
+                    return false;
+                }
+                var manarain2power = form["manarain2power"].value;
+                if (isNaN(manarain2power) || manarain2power < 1) {
+                    alert("2x manarain value invalid");
+                    return false;
+                }
+                var manarain3power = form["manarain3power"].value;
+                if (isNaN(manarain3power) || manarain3power < 1) {
+                    alert("3x manarain value invalid");
+                    return false;
+                }
+                var hours = form["hours"].value;
+                if (isNaN(hours) || manarain3power < 1) {
+                    alert("hours value invalid");
+                    return false;
+                }
+                settings.islands1Avg = islands1power;
+                settings.islands2Avg = islands2power;
+                settings.islands3Avg = islands3power;
+                settings.manarain1Avg = manarain1power;
+                settings.manarain2Avg = manarain2power;
+                settings.manarain3Avg = manarain3power;
+                settings.hours = hours;
+                settings.manaShield = form["shield"].value;
+                calculateMana();
+            }
+
             function handleInteraction(event) {
                 if (event.target.selected) event.target.alpha = 1;
                 else event.target.alpha = (event.type == "mouseover") ? 1 : 0.5; 
@@ -880,20 +988,20 @@
                     (y == 0 && x >= 1 && x <= 2) ||
                     (y >= 6 && y <= 7 && x <= 2)
                 ) {
-                    return 3;
+                    return 5;
                 }
                 if (
                     (y == 0 && x >= 3 && x <= 5) ||
                     (y == 7 && x >= 3 && x <= 5) ||
                     (y == 6 && x == 5)
                 ) {
-                    return 2;
+                    return 3;
                 }
                 if (
                     (y == 0 && x >= 6 && x <= 8) ||
                     (y >= 6 && y <= 7 && x >= 6 && x <= 8)
                 ) {
-                    return 1;
+                    return 2;
                 }
                 return 0;
             }
@@ -1000,7 +1108,7 @@
                         }
                     }
                 }
-
+                calculateMana();
                 stage.update();
             }
 
@@ -1059,6 +1167,7 @@
                             }, false);
                         stage.addChild(cell.symbol);
                     }
+                    calculateMana();
                     stage.update();
                     return true;
                 }
@@ -1103,6 +1212,12 @@
             function getMapSaveData() {
                 return {
                     mapNumber: settings.maps,
+                    islands1avgpwr: settings.islands1Avg,
+                    islands2avgpwr: settings.islands2Avg,
+                    islands3avgpwr: settings.islands3Avg,
+                    manarain1avgpwr: settings.manarain1Avg,
+                    manarain2avgpwr: settings.manarain2Avg,
+                    manarain3avgpwr: settings.manarain3Avg,
                     drawings: mapsLayout.map((ml) =>{
                         return ml.map((row) => {
                             return row.map((c) => {
@@ -1127,6 +1242,12 @@
 
             function loadSavedMap(result) {
                 settings.maps = result.mapNumber;
+                settings.islands1Avg = result.islands1avgpwr;
+                settings.islands2Avg = result.islands2avgpwr;
+                settings.islands3Avg = result.islands3avgpwr;
+                settings.manarain1Avg = result.manarain1avgpwr;
+                settings.manarain2Avg = result.manarain2avgpwr;
+                settings.manarain3Avg = result.manarain3avgpwr;
                 clearCanvas();
                 DrawMap();
                 var bBG = toolbar.getChildByName("bBG");
@@ -1180,6 +1301,7 @@
                                     });
                             });
                     });
+                calculateMana();
                 stage.update();
             }
 
@@ -1279,7 +1401,79 @@
                 }
             }
             
+            function calculateMana() {
+                var manapersecond = 0;
+                var totalPower = 0;
+                mapsLayout.forEach(
+                    (mapLayout, m) => {
+                        forEach.map(
+                            (r, row) => {
+                                r.forEach(
+                                    (cell, column) => {
+                                        if (cell.drawable && cell.symbolSer && cell.symbolSer == settings.manaShield) {
+                                            var pwr = (cell.islandManaMultiplier == 1 ? settings.islands1Avg : (cell.islandManaMultiplier == 2 ? settings.islands2Avg : settings.islands3Avg));
+                                            
+                                            var manaRainMultiplier = cell.manaRainMultiplier;
+                                            if (manaRainMultiplier == 5) {
+                                                if (column == 0 && m > 0) {
+                                                    var center = mapsLayout[m-1][1][7];
+                                                    if(center.symbolSer == null) {
+                                                        manaRainMultiplier = 1;
+                                                    }
+                                                    else if (center.symbolSer != settings.manaShield) {
+                                                        manaRainMultiplier = 0.5;
+                                                    }
+                                                }
+                                                else if (column == 0 && m == 0) {
+                                                    manaRainMultiplier = 1;
+                                                }
+                                            }
 
+                                            if (manaRainMultiplier == 3) {
+                                                if (column == 0 && m > 0) {
+                                                    var center = mapsLayout[m-1][4][7];
+                                                    if(center.symbolSer == null) {
+                                                        manaRainMultiplier = 1;
+                                                    }
+                                                    else if (center.symbolSer != settings.manaShield) {
+                                                        manaRainMultiplier = 0.5;
+                                                    }
+                                                }
+                                                else if (column == 0 && m == 0) {
+                                                    manaRainMultiplier = 1;
+                                                }
+                                            }
+
+                                            if (manaRainMultiplier == 2) {
+                                                if (column == 0 && m > 0) {
+                                                    var center = mapsLayout[m-1][7][7];
+                                                    if(center.symbolSer == null) {
+                                                        manaRainMultiplier = 1;
+                                                    }
+                                                    else if (center.symbolSer != settings.manaShield) {
+                                                        manaRainMultiplier = 0.5;
+                                                    }
+                                                }
+                                                else if (column == 0 && m == 0) {
+                                                    manaRainMultiplier = 1;
+                                                }
+                                            }
+
+                                            manapersecond += pwr * cell.islandManaMultiplier * manaRainMultiplier;
+                                            totalPower += pwr;
+                                        }
+                                    });
+                            });
+                    });
+                
+                var manaperhour = manapersecond * 3600;
+                var manaperperiod = manaperhour * settings.hours;
+                toolbar.getChildByName("manaMin").text = `${Math.floor(manapersecond / 10) / 100} k/s`;
+                toolbar.getChildByName("manaHrs").text = `${Math.floor(manaperhour / 10000) / 100} M/s`;
+                toolbar.getChildByName("manaTot").text = `${Math.floor(manaperperiod / 10000) / 100} M in ${settings.hours} hrs`;
+                toolbar.getChildByName("manaPow").text = `${Math.floor(totalPower / 10) / 100} M power`;
+                toolbar.update();
+            }
         </script>
 
         <script async defer src="https://apis.google.com/js/api.js"
