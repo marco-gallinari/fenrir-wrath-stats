@@ -712,7 +712,7 @@
                         }, false);
                         toolbar.addChild(calcB);
 
-                        var manaText = new createjs.Text("0 k/s", "100px Arial", "#555");
+                        var manaText = new createjs.Text("0 k/m", "100px Arial", "#555");
                         manaText.name = "manaMin";
                         manaText.scale = TBARH / label1.getMeasuredHeight() / 2;
                         manaText.x = startDownload + TBARH * 6 + 100;
@@ -731,7 +731,7 @@
                         var manaText3 = new createjs.Text("0 M in 0 hrs", "100px Arial", "#555");
                         manaText3.name = "manaTot";
                         manaText3.scale = TBARH / label1.getMeasuredHeight() / 2;
-                        manaText3.x = startDownload + TBARH * 6 + 350;
+                        manaText3.x = startDownload + TBARH * 6 + 400;
                         manaText3.y = Math.floor(TBARH / 3);
                         manaText3.textAlign = "center";
                         toolbar.addChild(manaText3);
@@ -739,13 +739,13 @@
                         var manaText4 = new createjs.Text("0 M power", "100px Arial", "#555");
                         manaText4.name = "manaPow";
                         manaText4.scale = TBARH / label1.getMeasuredHeight() / 2;
-                        manaText4.x = startDownload + TBARH * 6 + 500;
+                        manaText4.x = startDownload + TBARH * 6 + 600;
                         manaText4.y = Math.floor(TBARH / 3);
                         manaText4.textAlign = "center";
                         toolbar.addChild(manaText4);
 
                         var calcc = new createjs.Shape();
-                        calcc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH + 580, TBARH);
+                        calcc.graphics.beginStroke("rgba(100,100,100,0.8)").drawRect(0, 0, TBARH + 680, TBARH);
                         calcc.x = startDownload + TBARH * 5;
                         toolbar.addChild(calcc);
 
@@ -1468,10 +1468,10 @@
                             });
                     });
                 
-                var manaperhour = manapersecond * 3600;
+                var manaperhour = manapersecond * 60;
                 var manaperperiod = manaperhour * settings.hours;
-                toolbar.getChildByName("manaMin").text = `${Math.floor(manapersecond / 10) / 100} k/s`;
-                toolbar.getChildByName("manaHrs").text = `${Math.floor(manaperhour / 10000) / 100} M/s`;
+                toolbar.getChildByName("manaMin").text = `${Math.floor(manapersecond / 10) / 100} k/m`;
+                toolbar.getChildByName("manaHrs").text = `${Math.floor(manaperhour / 10000) / 100} M/h`;
                 toolbar.getChildByName("manaTot").text = `${Math.floor(manaperperiod / 10000) / 100} M in ${settings.hours} hrs`;
                 toolbar.getChildByName("manaPow").text = `${Math.floor(totalPower / 10) / 100} M power`;
                 toolbar.update();
