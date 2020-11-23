@@ -211,7 +211,7 @@
             <!-- Modal content -->
             <div class="modal-content">
                 <span class="close">&times;</span>
-                <form id="manaForm" onsubmit="return validateManaForm()">
+                <form id="manaForm">
                     <label for="islands1power">average power for 1x islands (k)</label>
                     <input type="text" id="islands1power" name="islands1power" required>
                     <label for="islands2power">average power for 2x islands (k)</label>
@@ -288,6 +288,10 @@
 
                 $('.close').on("click", function() {
                     $('#manaSettingsModal').css("display", "none");
+                });
+                $("#manaForm").submit(function(e) {
+                    e.preventDefault();
+                    validateManaForm();
                 });
 
                 setTimeout(() => { 
