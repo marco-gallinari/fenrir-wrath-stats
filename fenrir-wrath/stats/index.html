@@ -604,15 +604,14 @@
                         },
                         { name: "ManaFarm", title: "Farm Indicator", type: "number",
                             itemTemplate: function(value, item) {
-                                var ivalue = parseFloat(value.replace(',', '.'));
                                 var style = "width:100%;height:100%;padding-right:5px;border-radius:3px;";
-                                if (item.ManaCollected > 4 && ivalue > 6) {
+                                if (item.ManaCollected > 4 && value > 6) {
                                     style += "background-color:#DE3733;";
                                 }
-                                else if (item.ManaCollected > 4 && ivalue > 4) {
+                                else if (item.ManaCollected > 4 && value > 4) {
                                     style += "background-color:#F7A940;";
                                 }
-                                else if (item.ManaCollected > 3 && ivalue > 4) {
+                                else if (item.ManaCollected > 3 && value > 4) {
                                     style += "background-color:#F7E755;";
                                 }
                                 return $("<div>").attr("style", style).text(value);
