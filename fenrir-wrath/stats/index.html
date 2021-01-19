@@ -454,8 +454,8 @@
                                 Hardness : +(el[8].replace(/,/,'.')),
                                 PlayerPower : el[9],
                                 DeltaPower: el[10],
-                                LostAttacks: el[11],
-                                ManaFarm: el[12]
+                                LostAttacks: +(el[11].replace(/,/,'.')),
+                                ManaFarm: +(el[12].replace(/,/,'.'))
                             }
                         }).sort(function(a, b) {
                             return b.ManaCollected - a.ManaCollected ;
@@ -587,11 +587,11 @@
                                 return percentileTemplate(value, delta60th, min60ths, max60ths, "delt");
                             } 
                         },
-                        { name: "LostAttacks", title: "Lost Attacks", type: "number",
+                        { name: "LostAttacks", title: "Unused Attacks", type: "number",
                             itemTemplate: function(value, item) {
                                 var style = "width:100%;height:100%;padding-right:5px;border-radius:3px;";
                                 if (value > 6) {
-                                    style += "background-color:##DE3733;";
+                                    style += "background-color:#DE3733;";
                                 }
                                 else if (value > 3) {
                                     style += "background-color:#F7A940;";
@@ -604,14 +604,15 @@
                         },
                         { name: "ManaFarm", title: "Farm Indicator", type: "number",
                             itemTemplate: function(value, item) {
+                                var ivalue = parseFloat(value.replace(',', '.'));
                                 var style = "width:100%;height:100%;padding-right:5px;border-radius:3px;";
-                                if (item.ManaCollected > 4 && value > 6) {
-                                    style += "background-color:##DE3733;";
+                                if (item.ManaCollected > 4 && ivalue > 6) {
+                                    style += "background-color:#DE3733;";
                                 }
-                                else if (item.ManaCollected > 4 && value > 4) {
+                                else if (item.ManaCollected > 4 && ivalue > 4) {
                                     style += "background-color:#F7A940;";
                                 }
-                                else if (item.ManaCollected > 3 && value > 4) {
+                                else if (item.ManaCollected > 3 && ivalue > 4) {
                                     style += "background-color:#F7E755;";
                                 }
                                 return $("<div>").attr("style", style).text(value);
