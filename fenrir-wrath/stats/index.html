@@ -261,13 +261,12 @@
                 </div>
             </div>
         </button>
-        <button class="tablinks typo right" onclick="openWar(event, 5469)">War 19/12/2020</button>
+        <button class="tablinks typo right" onclick="openWar(event, 6774)">War 16/01/2021</button>
         <button class="tablinks typo right" onclick="openWar(event, 4766)">War 5/12/2020</button>
         <button class="tablinks typo right" onclick="openWar(event, 3943)">War 21/11/2020</button>
         <button class="tablinks typo right" onclick="openWar(event, 3481)">War 11/11/2020</button>
         <button class="tablinks typo right" onclick="openWar(event, 2223)">War 17/10/2020</button>
         <button class="tablinks typo right" onclick="openWar(event, 1879)">War 3/10/2020</button>
-        <button class="tablinks typo right" onclick="openWar(event, 1893)">War 21/9/2020</button>
     </div>
 
     <div class="loader hidden"></div>
@@ -454,7 +453,8 @@
                                 AVGEnemyPower : el[7],
                                 Hardness : +(el[8].replace(/,/,'.')),
                                 PlayerPower : el[9],
-                                DeltaPower: el[10]
+                                DeltaPower: el[10],
+                                ManaFarm: el[11]
                             }
                         }).sort(function(a, b) {
                             return b.ManaCollected - a.ManaCollected ;
@@ -584,6 +584,21 @@
                         { name: "DeltaPower", title: "Delta power (k)", type: "number",
                             itemTemplate: function(value, item) {
                                 return percentileTemplate(value, delta60th, min60ths, max60ths, "delt");
+                            } 
+                        },
+                        { name: "ManaFarm", title: "Farm Indicator", type: "number",
+                            itemTemplate: function(value, item) {
+                                var style = "width:100%;height:100%;padding-right:5px;border-radius:3px;";
+                                if (item.ManaCollected > 4 && value > 6) {
+                                    style += "background-color:##DE3733;filter: brightness(90%) opacity(80%);";
+                                }
+                                else if (item.ManaCollected > 4 && value > 4) {
+                                    style += "background-color:#F7A940;filter: brightness(90%) opacity(80%);";
+                                }
+                                else if (item.ManaCollected > 3 && value > 4) {
+                                    style += "background-color:#F7E755;filter: brightness(90%) opacity(80%);";
+                                }
+                                return $("<div>").attr("style", style).text(value);
                             } 
                         }
                     ]
