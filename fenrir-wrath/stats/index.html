@@ -448,7 +448,6 @@
                                 CrystalI : +(el[3].replace(/,/,'.')),
                                 CrystalII : +(el[4].replace(/,/,'.')),
                                 Islands : el[5],
-                                MissingIslands: el.length > 11 ? el[11] : 0,
                                 DefeatedHeroes : el[6],
                                 AVGEnemyPower : el[7],
                                 Hardness : +(el[8].replace(/,/,'.')),
@@ -493,10 +492,6 @@
                     return el.PlayerPower
                 }), 0.6);
                 
-                var missing60th = percentile($.map(tableData, (el, ix) => {
-                    return el.MissingIslands
-                }), 0.6);
-                
                 var delta60th = percentile($.map(tableData, (el, ix) => {
                     return el.DeltaPower
                 }), 0.6);
@@ -506,7 +501,6 @@
                     cri1: Math.min.apply(Math, $.map(tableData, (el, ix) => { return el.CrystalI - cri160th })),
                     cri2: Math.min.apply(Math, $.map(tableData, (el, ix) => { return el.CrystalII - cri260th })),
                     isln: Math.min.apply(Math, $.map(tableData, (el, ix) => { return el.Islands - islands60th })),
-                    miss: Math.min.apply(Math, $.map(tableData, (el, ix) => { return el.MissingIslands - missing60th })),
                     defe: Math.min.apply(Math, $.map(tableData, (el, ix) => { return el.DefeatedHeroes - def60th })),
                     avgd: Math.min.apply(Math, $.map(tableData, (el, ix) => { return el.AVGEnemyPower - avgdef60th })),
                     hard: Math.min.apply(Math, $.map(tableData, (el, ix) => { return el.Hardness - hard60th })),
@@ -519,7 +513,6 @@
                     cri1: Math.max.apply(Math, $.map(tableData, (el, ix) => { return el.CrystalI - cri160th })),
                     cri2: Math.max.apply(Math, $.map(tableData, (el, ix) => { return el.CrystalII - cri260th })),
                     isln: Math.max.apply(Math, $.map(tableData, (el, ix) => { return el.Islands - islands60th })),
-                    miss: Math.max.apply(Math, $.map(tableData, (el, ix) => { return el.MissingIslands - missing60th })),
                     defe: Math.max.apply(Math, $.map(tableData, (el, ix) => { return el.DefeatedHeroes - def60th })),
                     avgd: Math.max.apply(Math, $.map(tableData, (el, ix) => { return el.AVGEnemyPower - avgdef60th })),
                     hard: Math.max.apply(Math, $.map(tableData, (el, ix) => { return el.Hardness - hard60th })),
@@ -555,11 +548,6 @@
                         { name: "Islands", title: "Islands captured", type: "number",
                             itemTemplate: function(value, item) {
                                 return percentileTemplate(value, islands60th, min60ths, max60ths, "isln");
-                            } 
-                        },
-                        { name: "MissingIslands", title: "Unused Attacks", type: "number",
-                            itemTemplate: function(value, item) {
-                                return percentileTemplate(value, missing60th, min60ths, max60ths, "miss", true);
                             } 
                         },
                         { name: "DefeatedHeroes", title: "Defeated Heroes (k)", type: "number",
@@ -694,9 +682,6 @@
 
                                 $('.placeholder').text($(this).text()).css('opacity', '1');
 
-                                // console.log($('.list__ul').find('li').eq(index).html());
-
-                                // $('.list__ul').find('li').eq(index).prependTo('.list__ul');
                                 $('.list__ul').toggle();
 
                                 showWeekStats(+($(this).attr('href')));
